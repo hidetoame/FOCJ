@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>入会お申し込み | Ferrari Owners’ Club Japan</title>
+  <link rel="icon" href="assets/img/favicon.ico">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/lib/jquery-3.7.1.min.js"></script>
+  <script src="assets/lib/jquery.validate.min.js"></script>
+  <script src="assets/lib/messages_ja.min.js"></script>
+  <script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
+  <script src="assets/js/form.js"></script>
+</head>
+<body>
+
+<div class="container registration-form">
+  <header class="common">
+    <div class="contents-inner">
+      <h1><img src="assets/img/logo_focj.svg" width="100" height="100" alt="Ferrari Owners’ Club Japan"></h1>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="contents-inner">
+      <h2 class="contents-title">入会お申し込み</h2>
+
+      <div class="form-contents">
+        <form action="registration-form-confirm.html" id="registration-form" class="h-adr" method="post" enctype="multipart/form-data">
+          <div id="form-invalid-message"></div>
+
+          <h3>申込者の情報</h3>
+
+          <div class="form-group">
+            <div class="form-group-name"><div class="icon icon-edit icon--text">氏名</div><div class="form-require">必須</div></div>
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-item-name">姓</div>
+                <input type="text" class="input-text validation-item" placeholder="姓"  id="familyname" name="familyname" required>
+                <div class="form-item-error"></div>
+              </label>
+              <label class="form-item-label">
+                <div class="form-item-name">名</div>
+                <input type="text" class="input-text validation-item" placeholder="名" id="firstname" name="firstname" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-group-name"><div class="icon icon-edit icon--text">氏名（フリガナ）</div><div class="form-require">必須</div></div>
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-item-name">姓</div>
+                <input type="text" class="input-text validation-item" placeholder="セイ" id="familyname-kana" name="familyname-kana" required>
+                <div class="form-item-error"></div>
+              </label>
+              <label class="form-item-label">
+                <div class="form-item-name">名</div>
+                <input type="text" class="input-text validation-item" placeholder="メイ" id="firstname-kana" name="firstname-kana" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">氏名（ローマ字表記）</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="name-alphabet" name="name-alphabet" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">パスポートと同じ表記をご記入ください。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-group-name"><div class="icon icon-edit icon--text">ご連絡先住所</div><div class="form-require">必須</div></div>
+            <div class="form-item-line --short">
+              <span class="p-country-name" style="display:none;">Japan</span>
+              <label class="form-item-label">
+                <div class="form-item-name">郵便番号</div>
+                <input type="text" class="input-text p-postal-code validation-item" id="postal-code" name="postal-code" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-item-name">都道府県</div>
+                <select class="input-select p-region validation-item" id="prefecture" name="prefecture" required>
+                  <option value="" selected>選択してください</option>
+                  <option value="北海道">北海道</option>
+                  <option value="青森県">青森県</option>
+                  <option value="岩手県">岩手県</option>
+                  <option value="宮城県">宮城県</option>
+                  <option value="秋田県">秋田県</option>
+                  <option value="山形県">山形県</option>
+                  <option value="福島県">福島県</option>
+                  <option value="茨城県">茨城県</option>
+                  <option value="栃木県">栃木県</option>
+                  <option value="群馬県">群馬県</option>
+                  <option value="埼玉県">埼玉県</option>
+                  <option value="千葉県">千葉県</option>
+                  <option value="東京都">東京都</option>
+                  <option value="神奈川県">神奈川県</option>
+                  <option value="新潟県">新潟県</option>
+                  <option value="富山県">富山県</option>
+                  <option value="石川県">石川県</option>
+                  <option value="福井県">福井県</option>
+                  <option value="山梨県">山梨県</option>
+                  <option value="長野県">長野県</option>
+                  <option value="岐阜県">岐阜県</option>
+                  <option value="静岡県">静岡県</option>
+                  <option value="愛知県">愛知県</option>
+                  <option value="三重県">三重県</option>
+                  <option value="滋賀県">滋賀県</option>
+                  <option value="京都府">京都府</option>
+                  <option value="大阪府">大阪府</option>
+                  <option value="兵庫県">兵庫県</option>
+                  <option value="奈良県">奈良県</option>
+                  <option value="和歌山県">和歌山県</option>
+                  <option value="鳥取県">鳥取県</option>
+                  <option value="島根県">島根県</option>
+                  <option value="岡山県">岡山県</option>
+                  <option value="広島県">広島県</option>
+                  <option value="山口県">山口県</option>
+                  <option value="徳島県">徳島県</option>
+                  <option value="香川県">香川県</option>
+                  <option value="愛媛県">愛媛県</option>
+                  <option value="高知県">高知県</option>
+                  <option value="福岡県">福岡県</option>
+                  <option value="佐賀県">佐賀県</option>
+                  <option value="長崎県">長崎県</option>
+                  <option value="熊本県">熊本県</option>
+                  <option value="大分県">大分県</option>
+                  <option value="宮崎県">宮崎県</option>
+                  <option value="鹿児島県">鹿児島県</option>
+                  <option value="沖縄県">沖縄県</option>
+                </select>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-item-name">市区町村・番地</div>
+                <input type="text" class="input-text p-locality p-street-address p-extended-address validation-item" id="city-address" name="city-address" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-item-name">建物名・部屋番号</div>
+                <input type="text" class="input-text" id="building-name" name="building-name">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-group-name"><div class="icon icon-radio icon--text">ご連絡先住所の種別</div><div class="form-require">必須</div></div>
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-item-radio">
+                  <input type="radio" class="input-radio" name="address-type" id="address-home">
+                  <div class="form-item-name">自宅</div>
+                </div>
+              </label>
+              <label class="form-item-label">
+                <div class="form-item-radio">
+                  <input type="radio" name="address-type" class="input-radio">
+                  <div class="form-item-name" id="address-work">勤務先</div>
+                </div>
+              </label>
+            </div>
+            <div class="form-item-error" id="form-item-error-address-type"></div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">携帯電話番号</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="mobile-number" name="mobile-number" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">電話番号</div></div>
+                <input type="text" class="input-text" id="phone-number" name="phone-number">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-group-name"><div class="icon icon-edit icon--text">生年月日</div><div class="form-require">必須</div></div>
+            <div class="form-item-line --short">
+              <label class="form-item-label --date">
+                <div class="form-item-date"><input type="text" class="input-text validation-item" id="birth-year" name="birth-year" placeholder="西暦" required><div class="form-item-name">年</div></div>
+                <div class="form-item-error"></div>
+              </label>
+              <label class="form-item-label">
+                <div class="form-item-date">
+                  <input type="text" class="input-text validation-item" id="birth-month" name="birth-month" placeholder="月" required><div class="form-item-name">月</div></div>
+                <div class="form-item-error"></div>
+              </label>
+              <label class="form-item-label">
+                <div class="form-item-date">
+                  <input type="text" class="input-text validation-item" placeholder="日" id="birth-day" name="birth-day" required>
+                  <div class="form-item-name">日</div>
+                </div>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">メールアドレス</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="mail-address" name="mail-address" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">職業</div><div class="form-require">必須</div></div>
+                <textarea class="input-textarea validation-item" id="occupation" name="occupation" required></textarea>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">主たる収入源をご記入ください。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">自己紹介</div><div class="form-require">必須</div></div>
+                <textarea class="input-textarea validation-item" id="self-introduction" name="self-introduction" required></textarea>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">車歴や参加したいイベントなどを含め、できる限り詳しくご記入ください。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-list icon--text">お付き合いのあるFerrariオフィシャルディーラー</div></div>
+                <select class="input-select" id="relationship-dealer" name="relationship-dealer">
+                  <option value="" selected>選択してください</option>
+                  MID Sapporo
+                  <option value="MID Sapporo">MID Sapporo</option>
+                  <option value="コーンズ芝ショールーム">コーンズ芝ショールーム</option>
+                  <option value="Rosso Scuderia">Rosso Scuderia</option>
+                  <option value="Nicole Competizione">Nicole Competizione</option>
+                  <option value="コーンズ名古屋ショールーム">コーンズ名古屋ショールーム</option>
+                  <option value="コーンズ大阪ショールーム">コーンズ大阪ショールーム</option>
+                  <option value="Auto Cavallino">Auto Cavallino</option>
+                  <option value="エムオート・イタリア">エムオート・イタリア</option>
+                  <option value="ヨーロピアンヴァージョン">ヨーロピアンヴァージョン</option>
+                  <option value="Auto Speciale">Auto Speciale</option>
+                  <option value="ヤナセフィオラーノモトーリ">ヤナセフィオラーノモトーリ</option>
+                </select>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">担当セールス名</div></div>
+                <input type="text" class="input-text"  id="sales-person" name="sales-person">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <hr>
+
+          <h3>イベントに参加するフェラーリの情報</h3>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">車種・Model名</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="car-model" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">年式</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="car-year" name="car-year" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">車体色</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="car-color" name="car-color" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">登録No</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="car-number" name="car-number" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+          </div>
+
+          <hr>
+
+          <h3>ご紹介者の情報</h3>
+          <p>ご紹介者のFOCJメンバー1名もしくはフェラーリ･ディーラー担当者1名と、理事1名の情報をご入力ください。</p>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">ご紹介者-1</div><div class="form-require">必須</div></div>
+                <input type="text" class="input-text validation-item" id="referrer1" name="referrer1" required>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">ご紹介者がいらっしゃらない場合は「なし」とご記入ください。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-list icon--text">ご紹介者ディーラー名</div></div>
+                <select class="input-select" id="referrer-dealer" name="referrer-dealer">
+                  <option value="" selected>選択してください</option>
+                  MID Sapporo
+                  <option value="MID Sapporo">MID Sapporo</option>
+                  <option value="コーンズ芝ショールーム">コーンズ芝ショールーム</option>
+                  <option value="Rosso Scuderia">Rosso Scuderia</option>
+                  <option value="Nicole Competizione">Nicole Competizione</option>
+                  <option value="コーンズ名古屋ショールーム">コーンズ名古屋ショールーム</option>
+                  <option value="コーンズ大阪ショールーム">コーンズ大阪ショールーム</option>
+                  <option value="Auto Cavallino">Auto Cavallino</option>
+                  <option value="エムオート・イタリア">エムオート・イタリア</option>
+                  <option value="ヨーロピアンヴァージョン">ヨーロピアンヴァージョン</option>
+                  <option value="Auto Speciale">Auto Speciale</option>
+                  <option value="ヤナセフィオラーノモトーリ">ヤナセフィオラーノモトーリ</option>
+                </select>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">ご紹介者-1がディーラー担当者の場合はディーラーを選択してください。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line --short">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-edit icon--text">ご紹介者-2（理事）</div></div>
+                <input type="text" class="input-text" id="referrer2" name="referrer2">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">ご紹介者がいらっしゃらない場合は「なし」とご記入ください。</div>
+          </div>
+
+          <hr>
+
+          <h3>添付書類</h3>
+
+          <div class="form-group">
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-image icon--text">運転免許証</div><div class="form-require">必須</div></div>
+                <input type="file" class="input-file" id="drivers-license" name="drivers-license" required accept="image/*">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">ファイルサイズは 100 MB 以下。<br>運転免許証の写真等の画像データを選択ください。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-image icon--text">車検証</div><div class="form-require">必須</div></div>
+                <input type="file" class="input-file" id="vehicle-inspection" name="vehicle-inspection" required accept="image/*">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">ファイルサイズは 100 MB 以下。<br>ご入力いただいたフェラーリの車検証の写真等の画像データを選択ください。<br>Ferrariを複数台所有の方も、1台分のみの車検証で差し支えありません。</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-group-name"><div class="icon icon-image icon--text">名刺</div></div>
+                <input type="file" class="input-file" id="business-card" name="business-card" accept="image/*">
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">ファイルサイズは 100 MB 以下。<br>主たる職業に関連する名刺の写真等の画像データを選択ください。</div>
+          </div>
+
+          <hr>
+
+          <h3>注意事項</h3>
+          <ul>
+            <li>ご住所は、クラブからの各種お知らせやイベント案内等が確実に受け取れる宛先をご記入ください。</li>
+            <li>お申込みを受付後、理事会での承認を経て、正式な入会手続きに進ませて頂きます。</li>
+            <li>入会金は5万円、年会費は5万円または5万5千円です。（メール会員は5万円／郵送会員は5万5千円）<br>※2021年より郵送会員の制度は廃止し、メール会員のみとなります。</li>
+          </ul>
+
+          <hr>
+
+          <h3>個人情報のお取り扱いについて</h3>
+
+          <p>ご記入ならびにご提出頂きました個人情報について、Ferrari Owners' Club Japanは厳重に管理し、以下の目的以外に利用いたしません。</p>
+
+          <ul>
+            <li>入会審査のため</li>
+            <li>入会後は各種のお知らせやご案内をお知らせするため</li>
+          </ul>
+
+          <p>また何らかの事情により入会されなかった方の個人情報は事務局にて責任を持って速やかに破棄いたします。</p>
+
+          <div class="form-group">
+            <div class="form-group-name"><div class="icon icon-checkbox icon--text">個人情報取り扱いへの同意</div><div class="form-require">必須</div></div>
+            <div class="form-item-line">
+              <label class="form-item-label">
+                <div class="form-item-checkbox">
+                  <input type="checkbox" class="input-checkbox" name="privacy-agreement" id="privacy-agreement" required>
+                  <div class="form-item-name">同意する</div>
+                </div>
+                <div class="form-item-error"></div>
+              </label>
+            </div>
+            <div class="form-group-description">個人情報のお取り扱いに同意の上チェックしてください。</div>
+          </div>
+
+          <div class="button-area">
+            <button type="submit" class="button button--primary icon icon-datacheck">入力内容を確認</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="common">
+    <div class="contents-inner">
+      <hr>
+      <div class="back-to-top">
+        <a href="https://ferrariownersclub.jp/" class="button button--line icon icon-home">トップページに戻る</a>
+      </div>
+
+      <p class="copyright">Copyright © Ferrari Owners' Club Japan. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

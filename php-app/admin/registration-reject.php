@@ -1,0 +1,267 @@
+<?php
+/**
+ * 管理画面 - 却下内容確認
+ */
+// データベース接続（config.phpがsession_start()を呼ぶ）
+require_once '../config/config.php';
+
+// ログインチェック
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: index.php');
+    exit;
+}
+
+$db = Database::getInstance()->getConnection();
+
+// IDチェック
+$id = $_GET['id'] ?? 0;
+if (!$id) {
+    header('Location: registration-list.php');
+    exit;
+}
+
+// 申込データを取得
+$sql = "SELECT * FROM registrations WHERE id = :id";
+$stmt = $db->prepare($sql);
+$stmt->execute([':id' => $id]);
+$registration = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$registration) {
+    header('Location: registration-list.php');
+    exit;
+}
+
+// POSTで理由が送信された場合は処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reason'])) {
+    $_SESSION['rejection_reason'] = $_POST['reason'];
+    $_SESSION['rejection_id'] = $id;
+    // 却下処理へ
+    header('Location: reject-handler.php');
+    exit;
+}
+
+// アクティブな却下用テンプレートを取得
+$sql = "SELECT * FROM mail_templates 
+        WHERE template_type = '却下通知' AND is_active = true 
+        LIMIT 1";
+$stmt = $db->query($sql);
+$template = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$templateName = '';
+if (!$template) {
+    // テンプレートがない場合はデフォルトメッセージ
+    $mailContent = "却下用テンプレートが設定されていません。";
+    $templateName = '(テンプレート未設定)';
+} else {
+    // テンプレート変数を置換してプレビュー生成（理由はまだ空）
+    $mailContent = $template['body'];
+    $mailContent = str_replace('{{name}}', $registration['family_name'] . ' ' . $registration['first_name'], $mailContent);
+    $mailContent = str_replace('{{email}}', $registration['email'], $mailContent);
+    $mailContent = str_replace('{{rejection_reason}}', '（非承認理由）', $mailContent);
+    $templateName = $template['template_name'];
+}
+
+// テンプレート読み込み
+$html = file_get_contents('/var/www/html/templates/member-management/A6_registration-reject.html');
+
+// アセットパスを調整
+$html = str_replace('href="assets/', 'href="/templates/member-management/assets/', $html);
+$html = str_replace('src="assets/', 'src="/templates/member-management/assets/', $html);
+
+// ユーザー名を表示
+$username = $_SESSION['admin_username'] ?? 'admin';
+$html = str_replace('username01', h($username), $html);
+
+// ログアウトリンクを調整
+$html = str_replace('action="0_login.html"', 'action="logout.php"', $html);
+
+// メニューリンクを調整
+$html = str_replace('href="A2_registration-list.html"', 'href="registration-list.php"', $html);
+$html = str_replace('href="B1_edit-mail-index.html"', 'href="edit-mail.php"', $html);
+$html = str_replace('href="C1_members-list.html"', 'href="members-list.php"', $html);
+
+// 理由入力フォームの action を調整
+$html = str_replace('action="A7_registration-reject-complete.html"', 'action="registration-reject.php?id=' . $id . '"', $html);
+
+// 送信メール内容のラベルにテンプレート名を追加
+$html = str_replace('<h3>送信メール内容<a href="#"', 
+    '<h3>送信メール内容 <span style="font-size: 14px; color: #999; font-weight: normal;">（使用テンプレート: ' . h($templateName) . '）</span><a href="#"', $html);
+
+// メール内容の表示と編集機能
+$mailContentDisplay = nl2br(h($mailContent));
+$mailContentEdit = h($mailContent);
+
+// 表示用と編集用の両方のHTMLを作成
+$mailContentHtml = '
+<div id="mailContentDisplay" class="registration-detail-mail-content">' . $mailContentDisplay . '</div>
+<textarea id="mailContentEdit" class="registration-detail-mail-content" style="display:none; width:100%; min-height:400px; padding:15px; font-family:inherit; font-size:14px; line-height:1.8; border:1px solid #666; border-radius:4px; background-color:#222; color:#fff; resize:vertical; overflow:hidden;">' . $mailContentEdit . '</textarea>';
+
+$html = preg_replace('/<div class="registration-detail-mail-content">.*?<\/div>/s', 
+    $mailContentHtml, $html);
+
+// 編集ボタンを編集切り替えボタンに変更
+$html = str_replace('<a href="#" class="button button--line button--small">編集する</a>', 
+    '<a href="#" onclick="toggleMailEdit(); return false;" id="editButton" class="button button--line button--small">編集する</a>', $html);
+
+// 申込者情報を表示
+// 氏名
+$html = str_replace('>山田 太郎</div>', '>' . h($registration['family_name'] . ' ' . $registration['first_name']) . '</div>', $html);
+
+// フリガナ
+$html = str_replace('>ヤマダ タロウ</div>', '>' . h($registration['family_name_kana'] . ' ' . $registration['first_name_kana']) . '</div>', $html);
+
+// ローマ字
+$html = str_replace('>TAROU YAMADA</div>', '>' . h($registration['name_alphabet']) . '</div>', $html);
+
+// 住所
+$address = '〒' . h($registration['postal_code']) . '<br>' . h($registration['prefecture'] . $registration['city_address']);
+if ($registration['building_name']) {
+    $address .= ' ' . h($registration['building_name']);
+}
+$html = str_replace('>〒160-0022<br>東京都新宿区1-1-1 〇〇〇〇ビル 23F</div>', '>' . $address . '</div>', $html);
+
+// 住所種別
+$addressType = $registration['address_type'] === 'home' ? '自宅' : '勤務先';
+$html = str_replace('>勤務先</div>', '>' . $addressType . '</div>', $html);
+
+// 電話番号
+$html = str_replace('>090-1234-5678</div>', '>' . h($registration['mobile_number']) . '</div>', $html);
+$html = str_replace('>03-0000-0000</div>', '>' . h($registration['phone_number'] ?: '-') . '</div>', $html);
+
+// 生年月日
+$birthDate = $registration['birth_date'] ? date('Y年n月j日', strtotime($registration['birth_date'])) : '-';
+$html = str_replace('>1975年1月 1日</div>', '>' . $birthDate . '</div>', $html);
+
+// メールアドレス
+$html = str_replace('>example@example.com</div>', '>' . h($registration['email']) . '</div>', $html);
+
+// 職業
+$occupation = h($registration['occupation']);
+if ($registration['company_name']) {
+    $occupation .= '<br>' . h($registration['company_name']);
+}
+$html = str_replace('>〇〇株式会社 代表取締役<br>その他複数の会社経営</div>', '>' . $occupation . '</div>', $html);
+
+// 自己紹介
+$selfIntro = nl2br(h($registration['self_introduction'] ?: '-'));
+$html = preg_replace('/>自己紹介テキスト.*?<\/div>/s', '>' . $selfIntro . '</div>', $html, 1);
+
+// ディーラー情報
+$html = str_replace('>コーンズ芝ショールーム</div>', '>' . h($registration['relationship_dealer'] ?: '-') . '</div>', $html);
+
+// 担当セールス
+$html = preg_replace('/>担当セールス名<\/div>\s*<div class="registration-detail-value">-<\/div>/', 
+    '>担当セールス名</div><div class="registration-detail-value">' . h($registration['sales_person'] ?: '-') . '</div>', $html, 1);
+
+// 車両情報
+$html = preg_replace('/>車種・Model名<\/div>\s*<div class="registration-detail-value">○○○○<\/div>/',
+    '>車種・Model名</div><div class="registration-detail-value">' . h($registration['car_model'] ?: '-') . '</div>', $html, 1);
+$html = preg_replace('/>年式<\/div>\s*<div class="registration-detail-value">○○○○<\/div>/',
+    '>年式</div><div class="registration-detail-value">' . h($registration['model_year'] ? $registration['model_year'] . '年' : '-') . '</div>', $html, 1);
+$html = preg_replace('/>車体色<\/div>\s*<div class="registration-detail-value">○○○○<\/div>/',
+    '>車体色</div><div class="registration-detail-value">' . h($registration['car_color'] ?: '-') . '</div>', $html, 1);
+$html = preg_replace('/>登録No<\/div>\s*<div class="registration-detail-value">○○○○<\/div>/',
+    '>登録No</div><div class="registration-detail-value">' . h($registration['car_number'] ?: '-') . '</div>', $html, 1);
+
+// 紹介者情報
+// ご紹介者-1
+$html = str_replace('>〇〇〇〇さん</div>', '>' . h($registration['referrer1'] ?: '-') . '</div>', $html);
+
+// ご紹介者ディーラー名（正規表現で柔軟に対応）
+$html = preg_replace(
+    '/>ご紹介者ディーラー名<\/div>\s*<div class="registration-detail-value">.*?<\/div>/',
+    '>ご紹介者ディーラー名</div><div class="registration-detail-value">' . h($registration['referrer_dealer'] ?: '-') . '</div>',
+    $html
+);
+
+// ご紹介者-2（理事）（正規表現で柔軟に対応）
+$html = preg_replace(
+    '/>ご紹介者-2（理事）<\/div>\s*<div class="registration-detail-value">.*?<\/div>/',
+    '>ご紹介者-2（理事）</div><div class="registration-detail-value">' . h($registration['referrer2'] ?: '-') . '</div>',
+    $html
+);
+
+// ボタンエリアのリンクを調整
+// 戻るボタン
+$html = str_replace('href="A3_registration-detail.html"', 'href="registration-detail.php?id=' . $id . '"', $html);
+
+// textareaにname属性を追加
+$html = str_replace('<textarea class="input-textarea" placeholder="却下理由を入力してください"></textarea>',
+    '<textarea name="reason" class="input-textarea" placeholder="却下理由を入力してください" required></textarea>', $html);
+
+// カスタムメール内容を送信するための隠しフィールドを追加
+$html = str_replace('</form>',
+    '<input type="hidden" name="custom_mail_content" id="customMailContent" value=""></form>', $html);
+
+// JavaScriptを追加
+$script = '
+<script>
+var isEditing = false;
+
+function adjustTextareaHeight(textarea) {
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
+}
+
+function toggleMailEdit() {
+    var display = document.getElementById("mailContentDisplay");
+    var edit = document.getElementById("mailContentEdit");
+    var button = document.getElementById("editButton");
+    
+    if (!isEditing) {
+        // 編集モードに切り替え
+        display.style.display = "none";
+        edit.style.display = "block";
+        button.textContent = "編集完了";
+        isEditing = true;
+        
+        // テキストエリアの高さを調整
+        adjustTextareaHeight(edit);
+        edit.focus();
+        
+        // 入力時に高さを自動調整
+        edit.oninput = function() {
+            adjustTextareaHeight(edit);
+        };
+    } else {
+        // 表示モードに戻す
+        display.style.display = "block";
+        edit.style.display = "none";
+        button.textContent = "編集する";
+        
+        // 編集内容を表示に反映
+        var editedContent = edit.value;
+        
+        // 理由欄の内容を取得してメール内容に反映
+        var reasonText = document.querySelector(\'textarea[name="reason"]\').value;
+        if (reasonText) {
+            editedContent = editedContent.replace(/（非承認理由）/g, reasonText);
+        }
+        
+        display.innerHTML = editedContent.replace(/\n/g, "<br>");
+        isEditing = false;
+    }
+}
+
+// フォーム送信時にカスタムメール内容を設定
+document.querySelector(\'form[action*="registration-reject.php"]\').onsubmit = function() {
+    if (isEditing) {
+        toggleMailEdit();
+    }
+    
+    var editContent = document.getElementById("mailContentEdit").value;
+    
+    // 理由欄の内容を取得してメール内容に反映
+    var reasonText = document.querySelector(\'textarea[name="reason"]\').value;
+    if (reasonText && editContent) {
+        editContent = editContent.replace(/（非承認理由）/g, reasonText);
+    }
+    
+    document.getElementById("customMailContent").value = editContent;
+    return true;
+};
+</script>';
+
+$html = str_replace('</body>', $script . '</body>', $html);
+
+echo $html;

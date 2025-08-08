@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>FOCJ Membership Management</title>
+    <link rel="icon" href="assets/img/favicon.ico" />
+    <link rel="stylesheet" href="assets/lib/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="assets/lib/simplebar/simplebar.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="common">
+        <div class="header-inner">
+          <div class="header-logo"><img src="assets/img/logo_focj.svg" width="100" height="100" alt="" /></div>
+          <h1 class="header-title">
+            <span class="header-title-line">FOCJ Membership</span> <span class="header-title-line">Management</span>
+          </h1>
+          <div class="header-username icon icon-user icon--text">username01</div>
+          <div class="header-logout">
+            <form action="0_login.html" method="post"><button type="submit" class="button button--line">ログアウト</button></form>
+          </div>
+        </div>
+      </header>
+      <div class="contents admin">
+        <nav class="admin-menu" data-simplebar>
+          <ul class="admin-menu-list">
+            <li class="admin-menu-item">
+              <a href="A2_registration-list.html" class="admin-menu-link">会員希望申請一覧</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="B1_edit-mail-index.html" class="admin-menu-link --current">案内メール編集</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="C1_members-list.html" class="admin-menu-link">承認済み会員一覧</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="admin-main">
+          <div class="admin-inner">
+            <h2 class="admin-contents-title">メールテンプレート編集</h2>
+
+            <form action="B3_edit-mail-template-complete.html" method="post">
+              <div class="edit-mail-template-contents">
+                <div class="edit-mail-template-block">
+                  <div class="form-contents">
+                    <div class="form-group">
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">テンプレート名</div>
+                          <input type="text" class="input-text" value="（テンプレート名）">
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">テンプレート内容</div>
+                          <textarea class="input-textarea --large">〇〇〇〇
+
+〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇
+〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇
+
+〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇
+〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇</textarea>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="edit-mail-template-block --sidebar">
+
+                  <div class="edit-mail-template-sidebar-item">
+                    <div class="edit-mail-template-name">テンプレートの種類</div>
+                    <div class="edit-mail-template-value icon icon-check icon--text">承認用</div>
+                  </div>
+
+                  <div class="edit-mail-template-sidebar-item">
+                    <div class="edit-mail-template-name">現在のテンプレート名</div>
+                    <div class="edit-mail-template-value">（テンプレート名）</div>
+                  </div>
+
+                  <div class="edit-mail-template-sidebar-item">
+                    <div class="edit-mail-template-name">最終更新日</div>
+                    <div class="edit-mail-template-value">2025/5/15</div>
+                  </div>
+
+                  <div class="edit-mail-template-control button-area">
+                    <div class="edit-mail-template-control-item">
+                      <button type="submit" class="button button--primary">編集内容を反映する</button>
+                    </div>
+                    <div class="edit-mail-template-control-item">
+                      <a href="B4_mail-template-list.html" class="button button--line">戻る</a>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

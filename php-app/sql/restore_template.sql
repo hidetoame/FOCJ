@@ -1,0 +1,3 @@
+UPDATE mail_templates 
+SET body = E'{{name}} 様\n\nこの度は、Ferrari Owners'' Club Japanへのご入会をお申込みいただき、誠にありがとうございます。\nご入会の手続きが完了いたしましたので、ご案内申し上げます。\n\n【会員番号】\n{{member_number}}\n\n【ご登録情報】\nお名前: {{name}}様\nメールアドレス: {{email}}\n\n今後のイベント情報等は、メールまたは会員専用サイトにてご案内させていただきます。\n\nご不明な点がございましたら、下記までお問い合わせください。\n\n━━━━━━━━━━━━━━━━━━━━━━\nFerrari Owners'' Club Japan 事務局\nEmail: info@focj.jp\n━━━━━━━━━━━━━━━━━━━━━━'
+WHERE template_id = 1;

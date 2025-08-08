@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>FOCJ Membership Management</title>
+    <link rel="icon" href="assets/img/favicon.ico" />
+    <link rel="stylesheet" href="assets/lib/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="assets/lib/simplebar/simplebar.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="common">
+        <div class="header-inner">
+          <div class="header-logo"><img src="assets/img/logo_focj.svg" width="100" height="100" alt="" /></div>
+          <h1 class="header-title">
+            <span class="header-title-line">FOCJ Membership</span> <span class="header-title-line">Management</span>
+          </h1>
+          <div class="header-username icon icon-user icon--text">username01</div>
+          <div class="header-logout">
+            <form action="0_login.html" method="post"><button type="submit" class="button button--line">ログアウト</button></form>
+          </div>
+        </div>
+      </header>
+      <div class="contents admin">
+        <nav class="admin-menu" data-simplebar>
+          <ul class="admin-menu-list">
+            <li class="admin-menu-item">
+              <a href="A2_registration-list.html" class="admin-menu-link --current">会員希望申請一覧</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="B1_edit-mail-index.html" class="admin-menu-link">案内メール編集</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="C1_members-list.html" class="admin-menu-link">承認済み会員一覧</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="admin-main">
+          <div class="admin-inner">
+            <h2 class="admin-contents-title">会員希望申請一覧</h2>
+            <div class="table-list-contents" data-simplebar>
+              <table>
+                <thead>
+                  <tr>
+                    <th class="--medium-slim">申請年月日</th>
+                    <th class="--medium-slim">氏名</th>
+                    <th class="--medium-slim">氏名フリガナ</th>
+                    <th class="--wide">住所</th>
+                    <th class="--medium">携帯電話番号</th>
+                    <th class="--medium">メールアドレス</th>
+                    <th class="--slim">詳細</th>
+                    <th class="--slim">ステータス</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>山田 太郎</td>
+                    <td>ヤマダ タロウ</td>
+                    <td>東京都新宿区1-1-1 〇〇〇〇ビル 23F</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>佐藤 健太</td>
+                    <td>サトウ ケンタ</td>
+                    <td>大阪府大阪市北区2-3-4</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>鈴木 花子</td>
+                    <td>スズキ ハナコ</td>
+                    <td>神奈川県横浜市青葉区5-6-7</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>高橋 誠</td>
+                    <td>タカハシ マコト</td>
+                    <td>愛知県名古屋市中区8-9-10</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>田中 洋子</td>
+                    <td>タナカ ヨウコ</td>
+                    <td>福岡県福岡市博多区11-12-13</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>伊藤 雄太</td>
+                    <td>イトウ ユウタ</td>
+                    <td>北海道札幌市中央区14-15-16</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>渡辺 美咲</td>
+                    <td>ワタナベ ミサキ</td>
+                    <td>京都府京都市左京区17-18-19</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2025/5/15</td>
+                    <td>中村 大輔</td>
+                    <td>ナカムラ ダイスケ</td>
+                    <td>広島県広島市中区20-21-22</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>未対応</td>
+                  </tr>
+                  <tr>
+                    <td>2024/12/31</td>
+                    <td>小林 結衣</td>
+                    <td>コバヤシ ユイ</td>
+                    <td>宮城県仙台市青葉区23-24-25</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>非承認</td>
+                  </tr>
+                  <tr>
+                    <td>2024/10/21</td>
+                    <td>加藤 一郎</td>
+                    <td>カトウ イチロウ</td>
+                    <td>静岡県浜松市中区26-27-28</td>
+                    <td>090-1234-5678</td>
+                    <td>example@example.com</td>
+                    <td><a href="A3_registration-detail.html" class="button button--line button--small">表示</a></td>
+                    <td>非承認</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="button-area pagenation">
+                <span class="button button--line button--disable">前の10件</span>
+                <a href="#" class="button button--line">次の10件</a>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

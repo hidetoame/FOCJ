@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  focj-db:
+    image: postgres:15-alpine
+    container_name: focj-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: ${TZ}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - focj_postgres_data:/var/lib/postgresql/data
+      - ./create_tables.sql:/docker-entrypoint-initdb.d/01_create_tables.sql
+    networks:
+      - focj_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  focj-web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: focj-web
+    restart: always
+    ports:
+      - "${FASTAPI_PORT}:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      TZ: ${TZ}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - ./app:/app/app
+      - ./registration-form:/app/registration-form
+      - ./member-management:/app/member-management
+      - ./static:/app/static
+      - ./uploads:/app/uploads
+    depends_on:
+      focj-db:
+        condition: service_healthy
+    networks:
+      - focj_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  focj-adminer:
+    image: adminer:latest
+    container_name: focj-adminer
+    restart: always
+    ports:
+      - "${ADMINER_PORT}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: focj-db
+      ADMINER_DESIGN: pepa-linha
+    depends_on:
+      - focj-db
+    networks:
+      - focj_network
+
+volumes:
+  focj_postgres_data:
+    name: focj_postgres_data
+
+networks:
+  focj_network:
+    name: focj_network
+    driver: bridge
