@@ -285,7 +285,7 @@ function showFeeMasterForm(data) {
         annualFeesHtml += `
             <div class="annual-fee-item" data-index="${index}">
                 <label style="color: white; width: 100px;">${fee.year}年度:</label>
-                <input type="number" id="annual_amount_${index}" value="${fee.amount}" style="width: 150px;">
+                <input type="number" id="annual_amount_${index}" value="${parseInt(fee.amount)}" style="width: 150px;">
                 <span style="color: white; margin-left: 10px;">円</span>
             </div>
         `;
@@ -296,7 +296,7 @@ function showFeeMasterForm(data) {
             <h4>入会金設定</h4>
             <div class="form-group">
                 <label>金額（円）:</label>
-                <input type="number" id="entryFeeAmount" value="${data.entry_fee || 300000}">
+                <input type="number" id="entryFeeAmount" value="${parseInt(data.entry_fee) || 300000}">
             </div>
         </div>
         
@@ -349,16 +349,22 @@ function saveFeeMaster() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log("Response status:", response.status);
+        return response.json();
+    })
     .then(result => {
+        console.log("Response data:", result);
         if (result.success) {
             alert("設定を保存しました");
             closeFeeMasterModal();
         } else {
+            console.error("Save failed:", result);
             alert("保存に失敗しました: " + (result.error || ""));
         }
     })
     .catch(error => {
+        console.error("Save error:", error);
         alert("エラーが発生しました: " + error);
     });
 }

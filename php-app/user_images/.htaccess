@@ -1,0 +1,11 @@
+# 直接アクセスを禁止
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^.*$ - [F,L]
+</IfModule>
+
+# PHPファイルの実行を禁止
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>

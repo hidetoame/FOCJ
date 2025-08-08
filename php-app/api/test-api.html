@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>API テスト</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .api-test { border: 1px solid #ccc; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        h2 { color: #333; }
+        input, select { padding: 5px; margin: 5px; width: 200px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .response { margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 3px; white-space: pre-wrap; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <h1>FOCJ API テストツール</h1>
+    
+    <!-- 入会金決済API -->
+    <div class="api-test">
+        <h2>1. 入会金決済API</h2>
+        <div>
+            <input type="number" id="entry-user-id" placeholder="ユーザーID" value="17">
+            <input type="email" id="entry-email" placeholder="メールアドレス" value="test@example.com">
+            <input type="number" id="entry-amount" placeholder="金額" value="10000">
+            <select id="entry-payment-method">
+                <option value="credit_card">クレジットカード</option>
+                <option value="bank_transfer">銀行振込</option>
+                <option value="cash">現金</option>
+            </select>
+            <button onclick="testEntryFee()">テスト実行</button>
+        </div>
+        <div id="entry-response" class="response"></div>
+    </div>
+    
+    <!-- 年会費決済API -->
+    <div class="api-test">
+        <h2>2. 年会費決済API</h2>
+        <div>
+            <input type="number" id="annual-user-id" placeholder="ユーザーID" value="17">
+            <input type="email" id="annual-email" placeholder="メールアドレス" value="test@example.com">
+            <input type="number" id="annual-amount" placeholder="金額" value="20000">
+            <input type="number" id="annual-year" placeholder="年度" value="2025">
+            <select id="annual-payment-method">
+                <option value="credit_card">クレジットカード</option>
+                <option value="bank_transfer">銀行振込</option>
+                <option value="cash">現金</option>
+            </select>
+            <button onclick="testAnnualFee()">テスト実行</button>
+        </div>
+        <div id="annual-response" class="response"></div>
+    </div>
+    
+    <!-- 正規会員確認API -->
+    <div class="api-test">
+        <h2>3. 正規会員確認API</h2>
+        <div>
+            <input type="email" id="verify-email" placeholder="メールアドレス" value="test@example.com">
+            <input type="tel" id="verify-phone" placeholder="電話番号" value="090-1234-5678">
+            <button onclick="testVerifyMember()">テスト実行</button>
+        </div>
+        <div id="verify-response" class="response"></div>
+    </div>
+    
+    <script>
+        async function testEntryFee() {
+            const data = {
+                user_id: document.getElementById('entry-user-id').value,
+                email: document.getElementById('entry-email').value,
+                amount: parseFloat(document.getElementById('entry-amount').value),
+                payment_method: document.getElementById('entry-payment-method').value
+            };
+            
+            try {
+                const response = await fetch('/api/payment-entry-fee.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const responseDiv = document.getElementById('entry-response');
+                responseDiv.textContent = JSON.stringify(result, null, 2);
+                responseDiv.className = 'response ' + (result.status === 'success' ? 'success' : 'error');
+            } catch (error) {
+                document.getElementById('entry-response').textContent = 'エラー: ' + error.message;
+                document.getElementById('entry-response').className = 'response error';
+            }
+        }
+        
+        async function testAnnualFee() {
+            const data = {
+                user_id: document.getElementById('annual-user-id').value,
+                email: document.getElementById('annual-email').value,
+                amount: parseFloat(document.getElementById('annual-amount').value),
+                year: parseInt(document.getElementById('annual-year').value),
+                payment_method: document.getElementById('annual-payment-method').value
+            };
+            
+            try {
+                const response = await fetch('/api/payment-annual-fee.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const responseDiv = document.getElementById('annual-response');
+                responseDiv.textContent = JSON.stringify(result, null, 2);
+                responseDiv.className = 'response ' + (result.status === 'success' ? 'success' : 'error');
+            } catch (error) {
+                document.getElementById('annual-response').textContent = 'エラー: ' + error.message;
+                document.getElementById('annual-response').className = 'response error';
+            }
+        }
+        
+        async function testVerifyMember() {
+            const data = {
+                email: document.getElementById('verify-email').value,
+                phone: document.getElementById('verify-phone').value
+            };
+            
+            try {
+                const response = await fetch('/api/verify-member.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const responseDiv = document.getElementById('verify-response');
+                responseDiv.textContent = JSON.stringify(result, null, 2);
+                responseDiv.className = 'response ' + (result.member_exists ? 'success' : 'error');
+            } catch (error) {
+                document.getElementById('verify-response').textContent = 'エラー: ' + error.message;
+                document.getElementById('verify-response').className = 'response error';
+            }
+        }
+    </script>
+</body>
+</html>

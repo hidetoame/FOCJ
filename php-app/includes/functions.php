@@ -7,6 +7,9 @@
  * HTMLエスケープ
  */
 function h($str) {
+    if ($str === null) {
+        return '';
+    }
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 

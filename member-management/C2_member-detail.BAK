@@ -177,6 +177,68 @@
                   <div class="member-detail-name">個人情報取り扱いへの同意</div>
                   <div class="member-detail-value">同意する</div>
                 </div>
+
+                <h3>入会金</h3>
+                <div class="member-detail-item">
+                  <div class="member-detail-name">支払い状況</div>
+                  <div class="member-detail-value">支払い済み</div>
+                </div>
+                <div class="member-detail-item">
+                  <div class="member-detail-name">支払い年月日</div>
+                  <div class="member-detail-value">2025/00/00</div>
+                </div>
+                <div class="member-detail-item">
+                  <div class="member-detail-name">金額</div>
+                  <div class="member-detail-value">¥00,000</div>
+                </div>
+
+                <h3>当年年会費</h3>
+                <div class="member-detail-item">
+                  <div class="member-detail-name">支払い状況</div>
+                  <div class="member-detail-value">未払い</div>
+                </div>
+                <div class="member-detail-item">
+                  <div class="member-detail-name">支払い期限</div>
+                  <div class="member-detail-value">2025/00/00</div>
+                </div>
+                <div class="member-detail-item">
+                  <div class="member-detail-name">金額</div>
+                  <div class="member-detail-value">¥00,000</div>
+                </div>
+
+                <h3>年会費履歴</h3>
+                <div class="table-list-contents" data-simplebar>
+                  <table class="member-detail-table" style="margin-top: 20px; max-width: 550px;">
+                    <thead>
+                      <tr>
+                        <th class="--slim">年度</th>
+                        <th class="--medium-slim">支払い状況</th>
+                        <th class="--medium-slim">支払い年月日</th>
+                        <th class="--medium-slim">金額</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>2025</td>
+                        <td>未払い</td>
+                        <td>-</td>
+                        <td>¥00,000</td>
+                      </tr>
+                      <tr>
+                        <td>2024</td>
+                        <td>支払い済み</td>
+                        <td>2024/00/00</td>
+                        <td>¥00,000</td>
+                      </tr>
+                      <tr>
+                        <td>2023</td>
+                        <td>支払い済み</td>
+                        <td>2023/00/00</td>
+                        <td>¥00,000</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               <div class="member-detail-block --sidebar">

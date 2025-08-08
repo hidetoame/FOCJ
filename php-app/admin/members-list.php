@@ -229,11 +229,11 @@ $modalHtml = '
 
 .modal-content {
     background-color: #1a1a1a;
-    margin: 5% auto;
+    margin: 2% auto;
     padding: 0;
     border: 1px solid #444;
-    width: 80%;
-    max-width: 800px;
+    width: 95%;
+    max-width: 1400px;
     border-radius: 8px;
     color: white;
 }
@@ -423,191 +423,227 @@ function showEntryFeeForm(data) {
     const currentStatus = data.payment_status || "未払い";
     const paymentDate = data.entry_fee_payment_date ? data.entry_fee_payment_date.split(" ")[0] : "";
     
-    modalContent.innerHTML = `
-        <div class="fee-form">
-            <h4>会員情報</h4>
-            <div class="form-group">
-                <label>会員番号:</label>
-                <span>${data.member_number || "-"}</span>
-            </div>
-            <div class="form-group">
-                <label>氏名:</label>
-                <span>${data.member_name || "-"}</span>
-            </div>
+    // マスター設定から入会金を取得
+    fetch("api/manage-fees.php?action=getMaster")
+        .then(response => response.json())
+        .then(masterData => {
+            const entryFeeAmount = parseInt(masterData.entry_fee) || 300000;
             
-            <h4>入会金情報</h4>
-            <div class="form-group">
-                <label>金額:</label>
-                <input type="number" id="entryFeeAmount" value="${data.entry_fee || 300000}" readonly style="background-color: #f0f0f0;">
-            </div>
-            <div class="form-group">
-                <label>ステータス:</label>
-                <select id="entryFeeStatus">
-                    <option value="未払い" ${currentStatus === "未払い" ? "selected" : ""}>未払い</option>
-                    <option value="支払い済み" ${currentStatus === "支払い済み" ? "selected" : ""}>支払い済み</option>
-                    <option value="支払い期限切れ" ${currentStatus === "支払い期限切れ" ? "selected" : ""}>期限切れ</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>支払い日:</label>
-                <input type="date" id="entryFeePaymentDate" value="${paymentDate}">
-            </div>
-            <div class="form-group">
-                <label>支払い方法:</label>
-                <select id="entryFeePaymentMethod">
-                    <option value="">選択してください</option>
-                    <option value="銀行振込" ${data.entry_fee_payment_method === "銀行振込" ? "selected" : ""}>銀行振込</option>
-                    <option value="クレジットカード" ${data.entry_fee_payment_method === "クレジットカード" ? "selected" : ""}>クレジットカード</option>
-                    <option value="現金" ${data.entry_fee_payment_method === "現金" ? "selected" : ""}>現金</option>
-                    <option value="その他" ${data.entry_fee_payment_method === "その他" ? "selected" : ""}>その他</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>領収書番号:</label>
-                <input type="text" id="entryFeeReceiptNumber" value="${data.entry_fee_receipt_number || ""}">
-            </div>
-            <div class="form-group">
-                <label>備考:</label>
-                <textarea id="entryFeeNotes">${data.entry_fee_notes || ""}</textarea>
-            </div>
-        </div>
-        
-        <div class="button-group">
-            <button class="button button--line" onclick="closeFeeModal()" style="background: #2a2a2a; color: white; border-color: #666;">キャンセル</button>
-            <button class="button button--primary" onclick="saveEntryFee()" style="background: #0066ff; color: white; border-color: #0066ff;">保存</button>
-        </div>
-    `;
+            modalContent.innerHTML = `
+                <div class="fee-form">
+                    <h4>会員情報</h4>
+                    <div class="form-group">
+                        <label>会員番号:</label>
+                        <span>${data.member_number || "-"}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>氏名:</label>
+                        <span>${data.member_name || "-"}</span>
+                    </div>
+                    
+                    <h4>入会金情報</h4>
+                    <div class="form-group">
+                        <label>金額:</label>
+                        <input type="number" id="entryFeeAmount" value="${entryFeeAmount}" style="background-color: #3a3a3a; color: white; border: 1px solid #555;">
+                    </div>
+                    <div class="form-group">
+                        <label>ステータス:</label>
+                        <select id="entryFeeStatus">
+                            <option value="未払い" ${currentStatus === "未払い" ? "selected" : ""}>未払い</option>
+                            <option value="支払い済み" ${currentStatus === "支払い済み" ? "selected" : ""}>支払い済み</option>
+                            <option value="支払い期限切れ" ${currentStatus === "支払い期限切れ" ? "selected" : ""}>期限切れ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>支払期限:</label>
+                        <input type="date" id="entryFeePaymentDeadline" value="${data.entry_fee_payment_deadline ? data.entry_fee_payment_deadline.split(" ")[0] : ""}">
+                    </div>
+                    <div class="form-group">
+                        <label>支払い日:</label>
+                        <input type="date" id="entryFeePaymentDate" value="${paymentDate}">
+                    </div>
+                    <div class="form-group">
+                        <label>支払い方法:</label>
+                        <select id="entryFeePaymentMethod">
+                            <option value="">選択してください</option>
+                            <option value="銀行振込" ${data.entry_fee_payment_method === "銀行振込" ? "selected" : ""}>銀行振込</option>
+                            <option value="クレジットカード" ${data.entry_fee_payment_method === "クレジットカード" ? "selected" : ""}>クレジットカード</option>
+                            <option value="現金" ${data.entry_fee_payment_method === "現金" ? "selected" : ""}>現金</option>
+                            <option value="その他" ${data.entry_fee_payment_method === "その他" ? "selected" : ""}>その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>備考:</label>
+                        <textarea id="entryFeeNotes">${data.entry_fee_notes || ""}</textarea>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="button button--line" onclick="closeFeeModal()" style="background: #2a2a2a; color: white; border-color: #666;">キャンセル</button>
+                    <button class="button button--primary" onclick="saveEntryFee()" style="background: #0066ff; color: white; border-color: #0066ff;">保存</button>
+                </div>
+            `;
+        });
 }
 
 function showAnnualFeeForm(data) {
     const modalContent = document.getElementById("modalContent");
-    const annualFees = data.annual_fee || [];
-    const currentYear = new Date().getFullYear();
+    const memberAnnualFees = data.annual_fee || [];
     
-    // 年会費フォームHTML
-    let formHtml = `
-        <div class="fee-form">
-            <h4>会員情報</h4>
-            <div class="form-group">
-                <label>会員番号:</label>
-                <span>${data.member_number || "-"}</span>
-            </div>
-            <div class="form-group">
-                <label>氏名:</label>
-                <span>${data.member_name || "-"}</span>
-            </div>
+    console.log("Member annual fees from DB:", memberAnnualFees);
+    
+    // マスター設定から年会費情報を取得
+    fetch("api/manage-fees.php?action=getMaster")
+        .then(response => response.json())
+        .then(masterData => {
+            const masterAnnualFees = masterData.annual_fees || [];
             
-            <h4>年会費管理</h4>
-            <button class="button button--line add-year-button" onclick="addNewYear()" style="background: #2a2a2a; color: white; border-color: #666;">新規年度追加</button>
-    `;
-    
-    // 年度別の入力フォーム（最新年度のみ表示、他は履歴に）
-    if (annualFees.length > 0) {
-        const latestFee = annualFees[0];
-        const paymentDate = latestFee.payment_date ? latestFee.payment_date.split(" ")[0] : "";
-        
-        formHtml += `
-            <div style="margin-top: 20px; padding: 15px; border: 1px solid #444; border-radius: 4px; background: #2a2a2a;">
-                <h5 style="color: white; margin-top: 0;">${latestFee.year}年度</h5>
-                <div class="form-group">
-                    <label>金額:</label>
-                    <input type="number" id="annualFeeAmount" value="${latestFee.amount || 50000}">
-                </div>
-                <div class="form-group">
-                    <label>ステータス:</label>
-                    <select id="annualFeeStatus">
-                        <option value="未払い" ${latestFee.status === "未払い" ? "selected" : ""}>未払い</option>
-                        <option value="支払い済み" ${latestFee.status === "支払い済み" ? "selected" : ""}>支払い済み</option>
-                        <option value="免除" ${latestFee.status === "免除" ? "selected" : ""}>免除</option>
-                        <option value="期限切れ" ${latestFee.status === "期限切れ" ? "selected" : ""}>期限切れ</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>支払い日:</label>
-                    <input type="date" id="annualFeePaymentDate" value="${paymentDate}">
-                </div>
-                <div class="form-group">
-                    <label>支払い方法:</label>
-                    <select id="annualFeePaymentMethod">
-                        <option value="">選択してください</option>
-                        <option value="銀行振込" ${latestFee.payment_method === "銀行振込" ? "selected" : ""}>銀行振込</option>
-                        <option value="クレジットカード" ${latestFee.payment_method === "クレジットカード" ? "selected" : ""}>クレジットカード</option>
-                        <option value="現金" ${latestFee.payment_method === "現金" ? "selected" : ""}>現金</option>
-                        <option value="その他" ${latestFee.payment_method === "その他" ? "selected" : ""}>その他</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>領収書番号:</label>
-                    <input type="text" id="annualFeeReceiptNumber" value="${latestFee.receipt_number || ""}">
-                </div>
-                <div class="form-group">
-                    <label>備考:</label>
-                    <textarea id="annualFeeNotes">${latestFee.notes || ""}</textarea>
-                </div>
-                <input type="hidden" id="annualFeeYear" value="${latestFee.year}">
-            </div>
-        `;
-    }
-    
-    formHtml += `</div>`;
-    
-    // 履歴テーブル
-    if (annualFees.length > 0) {
-        formHtml += `
-            <div class="fee-history">
-                <h4>年会費支払い履歴</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>年度</th>
-                            <th>金額</th>
-                            <th>ステータス</th>
-                            <th>支払い日</th>
-                            <th>支払い方法</th>
-                            <th>領収書番号</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        
-        annualFees.forEach(fee => {
-            const statusColor = fee.status === "支払い済み" ? "green" : 
-                              fee.status === "免除" ? "blue" : "red";
-            formHtml += `
-                <tr>
-                    <td>${fee.year}年</td>
-                    <td>¥${(fee.amount || 0).toLocaleString()}</td>
-                    <td style="color: ${statusColor};">${fee.status || "未払い"}</td>
-                    <td>${fee.payment_date ? fee.payment_date.split(" ")[0] : "-"}</td>
-                    <td>${fee.payment_method || "-"}</td>
-                    <td>${fee.receipt_number || "-"}</td>
-                </tr>
+            console.log("Master annual fees:", masterAnnualFees);
+            
+            // マスターの年度情報と会員の支払い情報をマージ
+            const mergedFees = masterAnnualFees.map(masterFee => {
+                const memberFee = memberAnnualFees.find(f => f.year === masterFee.year);
+                // 会員の金額があればそれを使用、なければマスターの金額を使用
+                return {
+                    year: masterFee.year,
+                    amount: memberFee && memberFee.amount ? parseInt(memberFee.amount) : parseInt(masterFee.amount),
+                    status: memberFee ? memberFee.status : "未払い",
+                    payment_date: memberFee ? memberFee.payment_date : "",
+                    payment_method: memberFee ? memberFee.payment_method : "",
+                    payment_deadline: memberFee ? memberFee.payment_deadline : "",
+                    notes: memberFee ? memberFee.notes : ""
+                };
+            });
+            
+            console.log("Merged fees:", mergedFees);
+            
+            // 年度順にソート（新しい年を上に）
+            mergedFees.sort((a, b) => b.year - a.year);
+            
+            // 年会費フォームHTML
+            let formHtml = `
+                <div class="fee-form" style="max-height: 600px; overflow-y: auto;">
+                    <h4>会員情報</h4>
+                    <div class="form-group">
+                        <label>会員番号:</label>
+                        <span>${data.member_number || "-"}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>氏名:</label>
+                        <span>${data.member_name || "-"}</span>
+                    </div>
+                    
+                    <h4>年会費管理</h4>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                            <thead>
+                                <tr style="background: #2a2a2a;">
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 70px;">年度</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 110px;">金額</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 100px;">ステータス</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 120px;">支払期限</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 120px;">支払い日</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 140px;">支払い方法</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: left; min-width: 150px;">備考</th>
+                                    <th style="border: 1px solid #444; padding: 10px; color: white; text-align: center; min-width: 80px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
             `;
+            
+            // 各年度の行
+            mergedFees.forEach((fee, index) => {
+                const paymentDeadline = fee.payment_deadline ? fee.payment_deadline.split(" ")[0] : "";
+                const paymentDate = fee.payment_date ? fee.payment_date.split(" ")[0] : "";
+                const rowColor = index % 2 === 0 ? "#1a1a1a" : "#2a2a2a";
+                
+                formHtml += `
+                    <tr style="background: ${rowColor};">
+                        <td style="border: 1px solid #444; padding: 8px; color: white; font-weight: bold; white-space: nowrap;">${fee.year}年</td>
+                        <td style="border: 1px solid #444; padding: 8px;">
+                            <input type="number" id="annualFeeAmount_${fee.year}" value="${fee.amount}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100px; padding: 4px;">
+                        </td>
+                        <td style="border: 1px solid #444; padding: 8px;">
+                            <select id="annualFeeStatus_${fee.year}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100%; padding: 4px;">
+                                <option value="未払い" ${fee.status === "未払い" ? "selected" : ""}>未払い</option>
+                                <option value="支払い済み" ${fee.status === "支払い済み" ? "selected" : ""}>支払い済み</option>
+                                <option value="免除" ${fee.status === "免除" ? "selected" : ""}>免除</option>
+                                <option value="期限切れ" ${fee.status === "期限切れ" ? "selected" : ""}>期限切れ</option>
+                            </select>
+                        </td>
+                        <td style="border: 1px solid #444; padding: 8px;">
+                            <input type="date" id="annualFeePaymentDeadline_${fee.year}" value="${paymentDeadline}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100%; padding: 4px;">
+                        </td>
+                        <td style="border: 1px solid #444; padding: 8px;">
+                            <input type="date" id="annualFeePaymentDate_${fee.year}" value="${paymentDate}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100%; padding: 4px;">
+                        </td>
+                        <td style="border: 1px solid #444; padding: 8px;">
+                            <select id="annualFeePaymentMethod_${fee.year}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100%; padding: 4px;">
+                                <option value="">選択してください</option>
+                                <option value="銀行振込" ${fee.payment_method === "銀行振込" ? "selected" : ""}>銀行振込</option>
+                                <option value="クレジットカード" ${fee.payment_method === "クレジットカード" ? "selected" : ""}>クレジットカード</option>
+                                <option value="現金" ${fee.payment_method === "現金" ? "selected" : ""}>現金</option>
+                                <option value="その他" ${fee.payment_method === "その他" ? "selected" : ""}>その他</option>
+                            </select>
+                        </td>
+                        <td style="border: 1px solid #444; padding: 8px;">
+                            <input type="text" id="annualFeeNotes_${fee.year}" value="${fee.notes || ""}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100%; padding: 4px;">
+                        </td>
+                        <td style="border: 1px solid #444; padding: 8px; text-align: center;">
+                            <button onclick="saveAnnualFeeForYear(${fee.year})" style="background: #0066ff; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">保存</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            formHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="button button--line" onclick="closeFeeModal()" style="background: #2a2a2a; color: white; border-color: #666;">閉じる</button>
+                </div>
+            `;
+            
+            modalContent.innerHTML = formHtml;
         });
-        
-        formHtml += `
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-    
-    formHtml += `
-        <div class="button-group">
-            <button class="button button--line" onclick="closeFeeModal()" style="background: #2a2a2a; color: white; border-color: #666;">キャンセル</button>
-            <button class="button button--primary" onclick="saveAnnualFee()" style="background: #0066ff; color: white; border-color: #0066ff;">保存</button>
-        </div>
-    `;
-    
-    modalContent.innerHTML = formHtml;
 }
 
 function saveEntryFee() {
+    const status = document.getElementById("entryFeeStatus").value;
+    const paymentDate = document.getElementById("entryFeePaymentDate").value;
+    const paymentMethod = document.getElementById("entryFeePaymentMethod").value;
+    
+    // バリデーション：支払い済みの場合は支払日と支払い方法が必須
+    let hasError = false;
+    
+    // 既存のエラー表示をクリア
+    document.getElementById("entryFeePaymentDate").style.backgroundColor = "";
+    document.getElementById("entryFeePaymentMethod").style.backgroundColor = "";
+    
+    if (status === "支払い済み") {
+        if (!paymentDate) {
+            document.getElementById("entryFeePaymentDate").style.backgroundColor = "#8b0000";
+            hasError = true;
+        }
+        if (!paymentMethod) {
+            document.getElementById("entryFeePaymentMethod").style.backgroundColor = "#8b0000";
+            hasError = true;
+        }
+    }
+    
+    if (hasError) {
+        return; // エラーがある場合は保存しない
+    }
+    
     const data = {
-        status: document.getElementById("entryFeeStatus").value,
-        payment_date: document.getElementById("entryFeePaymentDate").value,
-        payment_method: document.getElementById("entryFeePaymentMethod").value,
-        receipt_number: document.getElementById("entryFeeReceiptNumber").value,
+        amount: document.getElementById("entryFeeAmount").value,
+        status: status,
+        payment_date: paymentDate,
+        payment_method: paymentMethod,
+        payment_deadline: document.getElementById("entryFeePaymentDeadline").value,
         notes: document.getElementById("entryFeeNotes").value
     };
     
@@ -629,21 +665,41 @@ function saveEntryFee() {
     });
 }
 
-function saveAnnualFee() {
-    const yearElement = document.getElementById("annualFeeYear");
-    if (!yearElement) {
-        alert("年度が選択されていません");
-        return;
+function saveAnnualFeeForYear(year) {
+    const status = document.getElementById(`annualFeeStatus_${year}`).value;
+    const paymentDate = document.getElementById(`annualFeePaymentDate_${year}`).value;
+    const paymentMethod = document.getElementById(`annualFeePaymentMethod_${year}`).value;
+    
+    // バリデーション：支払い済みの場合は支払日と支払い方法が必須
+    let hasError = false;
+    
+    // 既存のエラー表示をクリア
+    document.getElementById(`annualFeePaymentDate_${year}`).style.backgroundColor = "#3a3a3a";
+    document.getElementById(`annualFeePaymentMethod_${year}`).style.backgroundColor = "#3a3a3a";
+    
+    if (status === "支払い済み") {
+        if (!paymentDate) {
+            document.getElementById(`annualFeePaymentDate_${year}`).style.backgroundColor = "#8b0000";
+            hasError = true;
+        }
+        if (!paymentMethod) {
+            document.getElementById(`annualFeePaymentMethod_${year}`).style.backgroundColor = "#8b0000";
+            hasError = true;
+        }
+    }
+    
+    if (hasError) {
+        return; // エラーがある場合は保存しない
     }
     
     const data = {
-        year: yearElement.value,
-        amount: document.getElementById("annualFeeAmount").value,
-        status: document.getElementById("annualFeeStatus").value,
-        payment_date: document.getElementById("annualFeePaymentDate").value,
-        payment_method: document.getElementById("annualFeePaymentMethod").value,
-        receipt_number: document.getElementById("annualFeeReceiptNumber").value,
-        notes: document.getElementById("annualFeeNotes").value
+        year: year,
+        amount: document.getElementById(`annualFeeAmount_${year}`).value,
+        status: status,
+        payment_date: paymentDate,
+        payment_method: paymentMethod,
+        payment_deadline: document.getElementById(`annualFeePaymentDeadline_${year}`).value,
+        notes: document.getElementById(`annualFeeNotes_${year}`).value
     };
     
     fetch(`api/manage-fees.php?action=update_annual_fee&member_id=${currentMemberId}`, {
@@ -656,8 +712,9 @@ function saveAnnualFee() {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            alert("年会費情報を更新しました");
-            location.reload();
+            alert(year + "年度の年会費情報を更新しました");
+            // モーダルを再読み込み
+            openFeeModal(currentMemberId, "annual");
         } else {
             alert("更新に失敗しました");
         }

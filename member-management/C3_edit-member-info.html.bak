@@ -601,7 +601,247 @@
                         ファイルサイズは 100 MB 以下
                       </div>
                     </div>
+
                     <hr />
+
+                    <h3>入会金</h3>
+                    <div class="form-group">
+                      <div class="form-group-name">支払い状況<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="entry-fee-status" id="entry-fee-paid" checked />
+                            <div class="form-item-name">支払い済み</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="entry-fee-status" id="entry-fee-unpaid" />
+                            <div class="form-item-name">未払い</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い年月日<div class="form-require">支払い済みの場合は必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="date"
+                              class="input-date"
+                              id="entry-fee-paid-date"
+                              name="entry-fee-paid-date"
+                              value="2025-01-01"
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い期限<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="date"
+                              class="input-date"
+                              id="entry-fee-due-date"
+                              name="entry-fee-due-date"
+                              value="2025-01-01"
+                              required
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">金額<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="number"
+                              class="input-text"
+                              id="entry-fee-amount"
+                              name="entry-fee-amount"
+                              value="0"
+                              min="0"
+                              required
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <hr />
+
+                    <h3>当年（2025年）年会費</h3>
+                    <div class="form-group">
+                      <div class="form-group-name">支払い状況<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short mb20">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="annual-fee-status-2025" id="annual-fee-paid-2025"/>
+                            <div class="form-item-name">支払い済み</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="annual-fee-status-2025" id="annual-fee-unpaid-2025" checked />
+                            <div class="form-item-name">未払い</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い年月日<div class="form-require">支払い済みの場合は必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                            type="date"
+                            class="input-date"
+                            id="annual-fee-paid-date-2025"
+                            name="annual-fee-paid-date-2025"
+                            value=""
+                          />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い期限<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                            type="date"
+                            class="input-date"
+                            id="annual-fee-due-date-2025"
+                            name="annual-fee-due-date-2025"
+                            value="2025-01-01"
+                            required
+                          />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">金額<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="number"
+                              class="input-text"
+                              id="annual-fee-amount-2025"
+                              name="annual-fee-amount-2025"
+                              value="0"
+                              min="0"
+                              required
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <hr />
+
+                    <h3>年会費履歴</h3>
+
+                    <div class="form-group">
+                      <div class="form-group-name">2024年</div>
+                        <div class="form-item-line"><div class="form-item-name">支払い状況</div></div>
+                        <div class="form-item-line mb20">
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2024" id="annual-fee-paid-2024" checked />
+                              <div class="form-item-name">支払い済み</div>
+                            </div>
+                          </label>
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2024" id="annual-fee-unpaid-2024" />
+                              <div class="form-item-name">未払い</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">支払い年月日</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="date"
+                                class="input-date"
+                                id="annual-fee-paid-date-2024"
+                                name="annual-fee-paid-date-2024"
+                                value="2024-01-01"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">金額</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="number"
+                                class="input-text"
+                                id="annual-fee-amount-2024"
+                                name="annual-fee-amount-2024"
+                                value="0"
+                                min="0"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                      <div class="form-group-name">2023年</div>
+                        <div class="form-item-line"><div class="form-item-name">支払い状況</div></div>
+                        <div class="form-item-line mb20">
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2023" id="annual-fee-paid-2023" checked />
+                              <div class="form-item-name">支払い済み</div>
+                            </div>
+                          </label>
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2023" id="annual-fee-unpaid-2023" />
+                              <div class="form-item-name">未払い</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">支払い年月日</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="date"
+                                class="input-date"
+                                id="annual-fee-paid-date-2023"
+                                name="annual-fee-paid-date-2023"
+                                value="2023-02-01"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">金額</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="number"
+                                class="input-text"
+                                id="annual-fee-amount-2023"
+                                name="annual-fee-amount-2023"
+                                value="0"
+                                min="0"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                    </div>
+
                   </div>
                 </div>
 

@@ -330,7 +330,133 @@
                         </label>
                       </div>
                     </div>
+
                     <hr />
+
+                    <h3>入会金</h3>
+
+                    <div class="form-group">
+                      <div class="form-group-name">支払い状況<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">支払い済み</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い年月日<div class="form-require">支払い済みの場合は必須</div></div>
+                        <div class="form-item-confirm">2025/1/1</div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い期限<div class="form-require">必須</div></div>
+                        <div class="form-item-confirm">2025/1/1</div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">金額<div class="form-require">必須</div></div>
+                        <div class="form-item-confirm">¥00,000</div>
+                      </label>
+                    </div>
+
+                    <hr />
+
+                    <h3>当年（2025年）年会費</h3>
+
+                    <div class="form-group">
+                      <div class="form-group-name">支払い状況<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">未払い</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い年月日<div class="form-require">支払い済みの場合は必須</div></div>
+                        <div class="form-item-confirm">-</div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い期限<div class="form-require">必須</div></div>
+                        <div class="form-item-confirm">2025/1/1</div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">金額<div class="form-require">必須</div></div>
+                        <div class="form-item-confirm">¥00,000</div>
+                      </label>
+                    </div>
+
+                    <hr />
+
+                    <h3>年会費履歴</h3>
+
+                    <div class="form-group">
+                      <div class="form-group-name">2024年</div>
+                      <div class="form-item-line"><div class="form-item-name">支払い状況</div></div>
+                      <div class="form-item-line mb20">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-confirm">支払い済み</div>
+                        </label>
+                      </div>
+                      <div class="mb20">
+                        <label class="form-item-label">
+                          <div class="form-item-line"><div class="form-item-name">支払い年月日</div></div>
+                          <div class="form-item-line --short">
+                            <div class="form-item-confirm">2024/1/1</div>
+                          </div>
+                        </label>
+                      </div>
+                      <div class="mb20">
+                        <label class="form-item-label">
+                          <div class="form-item-line"><div class="form-item-name">金額</div></div>
+                          <div class="form-item-line --short">
+                            <div class="form-item-confirm">¥00,000</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                      <div class="form-group-name">2023年</div>
+                      <div class="form-item-line"><div class="form-item-name">支払い状況</div></div>
+                      <div class="form-item-line mb20">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-confirm">支払い済み</div>
+                        </label>
+                      </div>
+                      <div class="mb20">
+                        <label class="form-item-label">
+                          <div class="form-item-line"><div class="form-item-name">支払い年月日</div></div>
+                          <div class="form-item-line --short">
+                            <div class="form-item-confirm">2023/1/1</div>
+                          </div>
+                        </label>
+                      </div>
+                      <div class="mb20">
+                        <label class="form-item-label">
+                          <div class="form-item-line"><div class="form-item-name">金額</div></div>
+                          <div class="form-item-line --short">
+                            <div class="form-item-confirm">¥00,000</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
 

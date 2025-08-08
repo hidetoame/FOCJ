@@ -31,6 +31,8 @@ if (!$member) {
     exit;
 }
 
+// 会費情報の取得は削除（会費管理は別画面で行うため）
+
 // テンプレート読み込み
 $html = file_get_contents('/var/www/html/templates/member-management/C2_member-detail.html');
 
@@ -140,5 +142,7 @@ $html = str_replace('href="C6_remove-member.html"', 'href="remove-member.php?id=
 
 // 戻るボタンのリンクを調整
 $html = str_replace('href="C1_members-list.html"', 'href="members-list.php"', $html);
+
+// 入会金・年会費のセクションは削除しない（テンプレートに残す）
 
 echo $html;

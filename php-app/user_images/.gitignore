@@ -1,0 +1,4 @@
+# ユーザーアップロード画像を除外
+*
+!.gitignore
+!.htaccess

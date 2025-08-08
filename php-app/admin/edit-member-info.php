@@ -166,4 +166,6 @@ $html = preg_replace('/<input([^>]*?)id="referrer2"([^>]*?)name="referrer2"([^>]
 // キャンセルボタンのリンクを調整
 $html = str_replace('href="C2_member-detail.html"', 'href="member-detail.php?id=' . $id . '"', $html);
 
+// 入会金・年会費のセクションは削除済み（テンプレートファイルから直接削除）
+
 echo $html;

@@ -87,6 +87,10 @@ try {
             // annual_feeをデコード
             $feeData['annual_fee'] = json_decode($feeData['annual_fee'], true) ?? [];
             
+            // デバッグ用
+            error_log("Member ID: " . $memberId);
+            error_log("Annual fee data: " . json_encode($feeData['annual_fee']));
+            
             echo json_encode($feeData);
         }
         
@@ -94,12 +98,24 @@ try {
         $data = json_decode(file_get_contents('php://input'), true);
         
         if ($action === 'updateMaster') {
+            error_log("updateMaster action started");
+            error_log("Received data: " . json_encode($data));
+            
             // マスター設定の更新
             $updatedBy = $_SESSION['admin_username'] ?? 'admin';
+            error_log("Updated by: " . $updatedBy);
             
             // 既存レコードの確認
             $sql = "SELECT COUNT(*) FROM fee_master";
-            $count = $db->query($sql)->fetchColumn();
+            error_log("Executing SQL: " . $sql);
+            
+            try {
+                $count = $db->query($sql)->fetchColumn();
+                error_log("Record count: " . $count);
+            } catch (PDOException $e) {
+                error_log("Failed to count records: " . $e->getMessage());
+                throw $e;
+            }
             
             if ($count > 0) {
                 // 更新
@@ -143,10 +159,11 @@ try {
         elseif ($action === 'update_entry_fee') {
             // 入会金の更新
             $sql = "UPDATE membership_fees SET 
+                    entry_fee = :amount,
                     payment_status = :status,
                     entry_fee_payment_date = :payment_date,
                     entry_fee_payment_method = :payment_method,
-                    entry_fee_receipt_number = :receipt_number,
+                    entry_fee_payment_deadline = :payment_deadline,
                     entry_fee_notes = :notes,
                     updated_at = NOW()
                 WHERE member_id = :member_id";
@@ -154,10 +171,11 @@ try {
             $stmt = $db->prepare($sql);
             $result = $stmt->execute([
                 ':member_id' => $memberId,
+                ':amount' => $data['amount'] ?: 300000,
                 ':status' => $data['status'],
                 ':payment_date' => $data['payment_date'] ?: null,
                 ':payment_method' => $data['payment_method'] ?: null,
-                ':receipt_number' => $data['receipt_number'] ?: null,
+                ':payment_deadline' => $data['payment_deadline'] ?: null,
                 ':notes' => $data['notes'] ?: null
             ]);
             
@@ -183,7 +201,7 @@ try {
                     $fee['status'] = $data['status'];
                     $fee['payment_date'] = $data['payment_date'] ?: null;
                     $fee['payment_method'] = $data['payment_method'] ?: null;
-                    $fee['receipt_number'] = $data['receipt_number'] ?: null;
+                    $fee['payment_deadline'] = $data['payment_deadline'] ?: null;
                     $fee['notes'] = $data['notes'] ?: null;
                     $found = true;
                     break;
@@ -198,7 +216,7 @@ try {
                     'status' => $data['status'],
                     'payment_date' => $data['payment_date'] ?: null,
                     'payment_method' => $data['payment_method'] ?: null,
-                    'receipt_number' => $data['receipt_number'] ?: null,
+                    'payment_deadline' => $data['payment_deadline'] ?: null,
                     'notes' => $data['notes'] ?: null
                 ];
             }
@@ -250,7 +268,7 @@ try {
                 'status' => '未払い',
                 'payment_date' => null,
                 'payment_method' => null,
-                'receipt_number' => null,
+                'payment_deadline' => null,
                 'notes' => null
             ];
             
@@ -275,8 +293,25 @@ try {
         }
     }
     
-} catch (Exception $e) {
+} catch (PDOException $e) {
+    error_log("PDO Error in manage-fees.php: " . $e->getMessage());
+    error_log("SQLSTATE: " . $e->getCode());
+    error_log("Stack trace: " . $e->getTraceAsString());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode([
+        'error' => $e->getMessage(),
+        'sqlstate' => $e->getCode(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
+} catch (Exception $e) {
+    error_log("Error in manage-fees.php: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    http_response_code(500);
+    echo json_encode([
+        'error' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
 }
 ?>
