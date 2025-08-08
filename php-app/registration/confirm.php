@@ -21,16 +21,38 @@ if (!validateCsrfToken($_POST['csrf_token'] ?? '')) {
 $formData = $_POST;
 unset($formData['csrf_token']);
 
-// ファイルアップロード処理
+// ファイルアップロード処理（一時保存）
 $uploadedFiles = [];
 $fileFields = ['drivers-license', 'vehicle-inspection', 'business-card'];
+$tempDir = '/var/www/html/user_images/temp/';
+
+// セッションごとの一時ディレクトリ作成
+$sessionDir = $tempDir . session_id() . '/';
+if (!is_dir($sessionDir)) {
+    mkdir($sessionDir, 0755, true);
+}
 
 foreach ($fileFields as $field) {
     if (isset($_FILES[$field]) && $_FILES[$field]['error'] === UPLOAD_ERR_OK) {
-        $filename = uploadFile($_FILES[$field], $field);
-        if ($filename) {
-            $uploadedFiles[$field] = $filename;
-            $formData[$field . '_file'] = $filename;
+        // セキュアなファイル名を生成
+        $extension = pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION);
+        $secureName = bin2hex(random_bytes(16)) . '.' . $extension;
+        $tempPath = $sessionDir . $secureName;
+        
+        // MIMEタイプチェック
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($_FILES[$field]['tmp_name']);
+        if (strpos($mimeType, 'image/') !== 0) {
+            setError($field . 'は画像ファイルをアップロードしてください。');
+            header('Location: form.php');
+            exit;
+        }
+        
+        // ファイルを一時ディレクトリに移動
+        if (move_uploaded_file($_FILES[$field]['tmp_name'], $tempPath)) {
+            $uploadedFiles[$field] = $secureName;
+            $formData[$field . '_file'] = $secureName;
+            $formData[$field . '_original_name'] = $_FILES[$field]['name'];
         } else {
             setError($field . 'のアップロードに失敗しました。');
             header('Location: form.php');
@@ -164,13 +186,25 @@ $html = str_replace('{{referrer2}}', $referrer2, $html);
 // 画像ファイル表示セクション
 $imageSection = '';
 
+// デバッグ情報（本番では削除）
+$imageSection .= '<!-- Debug: Session ID = ' . session_id() . ' -->';
+
 // 運転免許証
 if (!empty($formData['drivers-license_file'])) {
+    // ファイルの存在確認
+    $tempFile = '/var/www/html/user_images/temp/' . session_id() . '/' . $formData['drivers-license_file'];
+    if (file_exists($tempFile)) {
+        $imageSection .= '<!-- Debug: License file exists at ' . $tempFile . ' -->';
+    } else {
+        $imageSection .= '<!-- Debug: License file NOT found at ' . $tempFile . ' -->';
+    }
+    
     $imageSection .= '
           <div class="form-group">
             <div class="form-group-name"><div class="icon icon-image icon--text">運転免許証</div></div>
             <div class="form-item-confirm">
-              <img src="/uploads/temp/' . h($formData['drivers-license_file']) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px;">
+              <img src="view-temp-image.php?file=' . h($formData['drivers-license_file']) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px;" onerror="this.onerror=null; this.src=\'data:image/svg+xml,%3Csvg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'400\\\' height=\\\'300\\\'%3E%3Crect width=\\\'400\\\' height=\\\'300\\\' fill=\\\'%23ddd\\\'/%3E%3Ctext x=\\\'50%25\\\' y=\\\'50%25\\\' text-anchor=\\\'middle\\\' dy=\\\'.3em\\\' fill=\\\'%23999\\\'%3E画像を読み込めません%3C/text%3E%3C/svg%3E\';">
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">' . h($formData['drivers-license_original_name'] ?? 'uploaded') . '</div>
             </div>
           </div>';
 }
@@ -181,7 +215,8 @@ if (!empty($formData['vehicle-inspection_file'])) {
           <div class="form-group">
             <div class="form-group-name"><div class="icon icon-image icon--text">車検証</div></div>
             <div class="form-item-confirm">
-              <img src="/uploads/temp/' . h($formData['vehicle-inspection_file']) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px;">
+              <img src="view-temp-image.php?file=' . h($formData['vehicle-inspection_file']) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px;">
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">' . h($formData['vehicle-inspection_original_name'] ?? 'uploaded') . '</div>
             </div>
           </div>';
 }
@@ -192,7 +227,8 @@ if (!empty($formData['business-card_file'])) {
           <div class="form-group">
             <div class="form-group-name"><div class="icon icon-image icon--text">名刺</div></div>
             <div class="form-item-confirm">
-              <img src="/uploads/temp/' . h($formData['business-card_file']) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px;">
+              <img src="view-temp-image.php?file=' . h($formData['business-card_file']) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px;">
+              <div style="font-size: 12px; color: #666; margin-top: 5px;">' . h($formData['business-card_original_name'] ?? 'uploaded') . '</div>
             </div>
           </div>';
 }

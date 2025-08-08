@@ -24,9 +24,70 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$db = Database::getInstance()->getConnection();
+
+// 現在の会員データを取得（画像情報の比較用）
+$sql = "SELECT * FROM registrations WHERE id = :id AND status = 'approved'";
+$stmt = $db->prepare($sql);
+$stmt->execute([':id' => $id]);
+$member = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$member) {
+    header('Location: members-list.php');
+    exit;
+}
+
+// フォームデータを取得
+$formData = $_POST;
+
+// 画像アップロード処理（一時保存）
+$uploadedFiles = [];
+$fileFields = ['drivers-license', 'vehicle-inspection', 'business-card'];
+$tempDir = '/var/www/html/user_images/temp/';
+
+// セッションごとの一時ディレクトリ作成（edit_プレフィックスを付けて区別）
+$sessionDir = $tempDir . 'edit_' . session_id() . '/';
+if (!is_dir($sessionDir)) {
+    mkdir($sessionDir, 0755, true);
+}
+
+// デバッグ：$_FILESの内容を確認
+error_log("FILES content: " . print_r($_FILES, true));
+
+// 画像フィールドの処理
+foreach ($fileFields as $field) {
+    error_log("Checking field: $field");
+    if (isset($_FILES[$field])) {
+        error_log("Field $field exists, error code: " . $_FILES[$field]['error']);
+    }
+    if (isset($_FILES[$field]) && $_FILES[$field]['error'] === UPLOAD_ERR_OK) {
+        // 新しい画像がアップロードされた
+        $extension = pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION);
+        $secureName = bin2hex(random_bytes(16)) . '.' . $extension;
+        $tempPath = $sessionDir . $secureName;
+        
+        // MIMEタイプチェック
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($_FILES[$field]['tmp_name']);
+        if (strpos($mimeType, 'image/') !== 0) {
+            $_SESSION['error'] = $field . 'は画像ファイルをアップロードしてください。';
+            header('Location: edit-member-info.php?id=' . $id);
+            exit;
+        }
+        
+        // ファイルを一時ディレクトリに移動
+        if (move_uploaded_file($_FILES[$field]['tmp_name'], $tempPath)) {
+            $uploadedFiles[$field] = $secureName;
+            $formData[$field . '_new_file'] = $secureName;
+            $formData[$field . '_original_name'] = $_FILES[$field]['name'];
+        }
+    }
+}
+
 // POSTデータをセッションに保存（完了処理で使用）
-$_SESSION['edit_member_data'] = $_POST;
+$_SESSION['edit_member_data'] = $formData;
 $_SESSION['edit_member_id'] = $id;
+$_SESSION['edit_member_files'] = $uploadedFiles;
 
 // テンプレート読み込み
 $html = file_get_contents('/var/www/html/templates/member-management/C4_edit-member-info-confirm.html');
@@ -150,6 +211,78 @@ $html = preg_replace(
     '/>ご紹介者-2（理事）<\/div>\s*<div class="form-item-confirm">-<\/div>/',
     '>ご紹介者-2（理事）</div><div class="form-item-confirm">' . h($_POST['referrer2'] ?: '-') . '</div>',
     $html, 1
+);
+
+// 添付書類セクションの処理
+// 運転免許証
+if (!empty($formData['drivers-license_new_file'])) {
+    // 新しい画像がアップロードされた
+    $licenseHtml = '<img src="../registration/view-temp-image.php?file=' . h($formData['drivers-license_new_file']) . '&session=edit_' . session_id() . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; display: block;">
+                    <div style="color: #0066cc; font-size: 12px; margin-top: 5px;">新しい画像がアップロードされました</div>';
+} else {
+    // 既存の画像を維持
+    $existingLicense = $member['license_image'] ?: $member['drivers_license_file'];
+    if ($existingLicense) {
+        $licenseHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($existingLicense) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; display: block;">
+                        <div style="color: #666; font-size: 12px; margin-top: 5px;">変更なし（現在の画像を維持）</div>';
+    } else {
+        $licenseHtml = '画像なし';
+    }
+}
+// 運転免許証のHTML置換 - 確認画面の構造に合わせる
+$html = preg_replace(
+    '/<div class="form-group-name">運転免許証<\/div>\s*<div class="form-item-line">\s*<label class="form-item-label">\s*<div class="form-item-confirm">変更なし<\/div>/',
+    '<div class="form-group-name">運転免許証</div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">' . $licenseHtml . '</div>',
+    $html
+);
+
+// 車検証
+if (!empty($formData['vehicle-inspection_new_file'])) {
+    $vehicleHtml = '<img src="../registration/view-temp-image.php?file=' . h($formData['vehicle-inspection_new_file']) . '&session=edit_' . session_id() . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; display: block;">
+                    <div style="color: #0066cc; font-size: 12px; margin-top: 5px;">新しい画像がアップロードされました</div>';
+} else {
+    $existingVehicle = $member['vehicle_inspection_image'] ?: $member['vehicle_inspection_file'];
+    if ($existingVehicle) {
+        $vehicleHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($existingVehicle) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; display: block;">
+                        <div style="color: #666; font-size: 12px; margin-top: 5px;">変更なし（現在の画像を維持）</div>';
+    } else {
+        $vehicleHtml = '画像なし';
+    }
+}
+// 車検証のHTML置換 - 画像タグが含まれているパターン
+$html = preg_replace(
+    '/<div class="form-group-name">車検証<\/div>\s*<div class="form-item-line">\s*<label class="form-item-label">\s*<div class="form-item-confirm"><img[^>]*><\/div>/',
+    '<div class="form-group-name">車検証</div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">' . $vehicleHtml . '</div>',
+    $html
+);
+
+// 名刺
+if (!empty($formData['business-card_new_file'])) {
+    $businessCardHtml = '<img src="../registration/view-temp-image.php?file=' . h($formData['business-card_new_file']) . '&session=edit_' . session_id() . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; display: block;">
+                         <div style="color: #0066cc; font-size: 12px; margin-top: 5px;">新しい画像がアップロードされました</div>';
+} else {
+    $existingCard = $member['business_card_image'] ?: $member['business_card_file'];
+    if ($existingCard) {
+        $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($existingCard) . '" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; display: block;">
+                            <div style="color: #666; font-size: 12px; margin-top: 5px;">変更なし（現在の画像を維持）</div>';
+    } else {
+        $businessCardHtml = '画像なし';
+    }
+}
+// 名刺のHTML置換
+$html = preg_replace(
+    '/<div class="form-group-name">名刺<\/div>\s*<div class="form-item-line">\s*<label class="form-item-label">\s*<div class="form-item-confirm">変更なし<\/div>/',
+    '<div class="form-group-name">名刺</div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">' . $businessCardHtml . '</div>',
+    $html
 );
 
 // 戻るボタンのリンクを調整

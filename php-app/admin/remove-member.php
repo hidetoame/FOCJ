@@ -67,6 +67,49 @@ $html = str_replace('username01', h($username), $html);
 // ログアウトリンクを調整
 $html = str_replace('action="0_login.html"', 'action="logout.php"', $html);
 
+// 添付書類セクションの画像を置換
+// 運転免許証
+$licenseImage = $member['license_image'] ?: $member['drivers_license_file'];
+if ($licenseImage) {
+    $licenseHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($licenseImage) . '" width="640" height="427" alt="">';
+} else {
+    $licenseHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="member-detail-name">運転免許証<\/div>\s*<div class="member-detail-value"><img[^>]*><\/div>/',
+    '<div class="member-detail-name">運転免許証</div>
+                  <div class="member-detail-value">' . $licenseHtml . '</div>',
+    $html
+);
+
+// 車検証
+$vehicleImage = $member['vehicle_inspection_image'] ?: $member['vehicle_inspection_file'];
+if ($vehicleImage) {
+    $vehicleHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($vehicleImage) . '" width="480" height="288" alt="">';
+} else {
+    $vehicleHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="member-detail-name">車検証<\/div>\s*<div class="member-detail-value"><img[^>]*><\/div>/',
+    '<div class="member-detail-name">車検証</div>
+                  <div class="member-detail-value">' . $vehicleHtml . '</div>',
+    $html
+);
+
+// 名刺
+$businessCardImage = $member['business_card_image'] ?: $member['business_card_file'];
+if ($businessCardImage) {
+    $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" width="400" height="250" alt="">';
+} else {
+    $businessCardHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="member-detail-name">名刺<\/div>\s*<div class="member-detail-value">-<\/div>/',
+    '<div class="member-detail-name">名刺</div>
+                  <div class="member-detail-value">' . $businessCardHtml . '</div>',
+    $html
+);
+
 // メニューリンクを調整
 $html = str_replace('href="A2_registration-list.html"', 'href="registration-list.php"', $html);
 $html = str_replace('href="B1_edit-mail-index.html"', 'href="edit-mail.php"', $html);

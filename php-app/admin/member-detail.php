@@ -65,6 +65,49 @@ $html = str_replace('>ヤマダ タロウ</div>', '>' . h($member['family_name_k
 // ローマ字
 $html = str_replace('>TAROU YAMADA</div>', '>' . h($member['name_alphabet']) . '</div>', $html);
 
+// 添付書類セクションの画像を置換
+// 運転免許証
+$licenseImage = $member['license_image'] ?: $member['drivers_license_file'];
+if ($licenseImage) {
+    $licenseHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($licenseImage) . '" width="640" height="427" alt="">';
+} else {
+    $licenseHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="member-detail-name">運転免許証<\/div>\s*<div class="member-detail-value"><img[^>]*><\/div>/',
+    '<div class="member-detail-name">運転免許証</div>
+                  <div class="member-detail-value">' . $licenseHtml . '</div>',
+    $html
+);
+
+// 車検証
+$vehicleImage = $member['vehicle_inspection_image'] ?: $member['vehicle_inspection_file'];
+if ($vehicleImage) {
+    $vehicleHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($vehicleImage) . '" width="480" height="288" alt="">';
+} else {
+    $vehicleHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="member-detail-name">車検証<\/div>\s*<div class="member-detail-value"><img[^>]*><\/div>/',
+    '<div class="member-detail-name">車検証</div>
+                  <div class="member-detail-value">' . $vehicleHtml . '</div>',
+    $html
+);
+
+// 名刺
+$businessCardImage = $member['business_card_image'] ?: $member['business_card_file'];
+if ($businessCardImage) {
+    $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" width="400" height="250" alt="">';
+} else {
+    $businessCardHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="member-detail-name">名刺<\/div>\s*<div class="member-detail-value">-<\/div>/',
+    '<div class="member-detail-name">名刺</div>
+                  <div class="member-detail-value">' . $businessCardHtml . '</div>',
+    $html
+);
+
 // 住所
 $address = '〒' . h($member['postal_code']) . '<br>' . h($member['prefecture'] . $member['city_address']);
 if ($member['building_name']) {

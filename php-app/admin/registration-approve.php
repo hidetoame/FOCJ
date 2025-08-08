@@ -169,6 +169,49 @@ $html = preg_replace(
     $html
 );
 
+// 添付書類セクションの画像を置換
+// 運転免許証
+$licenseImage = $registration['license_image'] ?: $registration['drivers_license_file'];
+if ($licenseImage) {
+    $licenseHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($licenseImage) . '" width="640" height="427" alt="">';
+} else {
+    $licenseHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="registration-detail-name">運転免許証<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
+    '<div class="registration-detail-name">運転免許証</div>
+                  <div class="registration-detail-value">' . $licenseHtml . '</div>',
+    $html
+);
+
+// 車検証
+$vehicleImage = $registration['vehicle_inspection_image'] ?: $registration['vehicle_inspection_file'];
+if ($vehicleImage) {
+    $vehicleHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($vehicleImage) . '" width="480" height="288" alt="">';
+} else {
+    $vehicleHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="registration-detail-name">車検証<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
+    '<div class="registration-detail-name">車検証</div>
+                  <div class="registration-detail-value">' . $vehicleHtml . '</div>',
+    $html
+);
+
+// 名刺
+$businessCardImage = $registration['business_card_image'] ?: $registration['business_card_file'];
+if ($businessCardImage) {
+    $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" width="400" height="250" alt="">';
+} else {
+    $businessCardHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="registration-detail-name">名刺<\/div>\s*<div class="registration-detail-value">-<\/div>/',
+    '<div class="registration-detail-name">名刺</div>
+                  <div class="registration-detail-value">' . $businessCardHtml . '</div>',
+    $html
+);
+
 // ボタンエリアのリンクを調整
 // 戻るボタン
 $html = str_replace('href="A3_registration-detail.html"', 'href="registration-detail.php?id=' . $id . '"', $html);

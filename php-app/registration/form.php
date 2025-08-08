@@ -138,8 +138,38 @@ document.addEventListener("DOMContentLoaded", function() {
 ';
 $html = str_replace('</body>', $sampleDataScript . '</body>', $html);
 
-// バリデーションルールを上書きするスクリプトを追加
+// バリデーションルールを上書きするスクリプトと画像プレビュー機能を追加
 $validationOverride = '
+<style>
+.image-preview {
+    margin-top: 10px;
+    max-width: 100%;
+}
+.image-preview img {
+    max-width: 300px;
+    max-height: 200px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 4px;
+    display: block;
+    margin-top: 5px;
+}
+.image-preview .file-name {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+.image-preview .file-size {
+    font-size: 11px;
+    color: #999;
+}
+.image-preview .remove-image {
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+}
+</style>
 <script>
 $(function() {
     // ページ読み込み後、バリデーションルールを調整
@@ -156,6 +186,55 @@ $(function() {
             console.log("バリデーションルールを調整しました");
         }
     }, 100);
+    
+    // 画像プレビュー機能
+    function setupImagePreview(inputId, labelText) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        
+        // プレビューコンテナを作成
+        const previewContainer = document.createElement("div");
+        previewContainer.className = "image-preview";
+        previewContainer.id = inputId + "-preview";
+        input.parentNode.insertBefore(previewContainer, input.nextSibling);
+        
+        input.addEventListener("change", function() {
+            const file = this.files[0];
+            previewContainer.innerHTML = "";
+            
+            if (file) {
+                // ファイルサイズチェック（100MB）
+                if (file.size > 100 * 1024 * 1024) {
+                    previewContainer.innerHTML = \'<div style="color: red;">ファイルサイズが100MBを超えています</div>\';
+                    this.value = "";
+                    return;
+                }
+                
+                // 画像ファイルチェック
+                if (!file.type.startsWith("image/")) {
+                    previewContainer.innerHTML = \'<div style="color: red;">画像ファイルを選択してください</div>\';
+                    this.value = "";
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = `
+                        <img src="${e.target.result}" alt="${labelText}のプレビュー">
+                        <div class="file-name">ファイル名: ${file.name}</div>
+                        <div class="file-size">サイズ: ${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                    `;
+                    previewContainer.innerHTML = preview;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // 各画像入力フィールドにプレビュー機能を設定
+    setupImagePreview("drivers-license", "運転免許証");
+    setupImagePreview("vehicle-inspection", "車検証");
+    setupImagePreview("business-card", "名刺");
 });
 </script>
 ';

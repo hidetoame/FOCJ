@@ -113,17 +113,46 @@ try {
     
     error_log("Executing SQL with params: " . print_r($params, true));
     $stmt->execute($params);
-    error_log("SQL executed successfully!");
+    $userId = $db->lastInsertId();
+    error_log("SQL executed successfully! New user ID: " . $userId);
     
-    // ファイルを正式な場所に移動
-    if (!empty($formData['drivers-license_file'])) {
-        moveTempFile($formData['drivers-license_file']);
+    // ユーザーディレクトリを作成して画像を移動
+    $userDir = '/var/www/html/user_images/' . $userId . '/';
+    if (!is_dir($userDir)) {
+        mkdir($userDir, 0755, true);
     }
-    if (!empty($formData['vehicle-inspection_file'])) {
-        moveTempFile($formData['vehicle-inspection_file']);
+    
+    $tempDir = '/var/www/html/user_images/temp/' . session_id() . '/';
+    $imageFields = [
+        'drivers-license_file' => 'license_image',
+        'vehicle-inspection_file' => 'vehicle_inspection_image',
+        'business-card_file' => 'business_card_image'
+    ];
+    
+    foreach ($imageFields as $formField => $dbField) {
+        if (!empty($formData[$formField])) {
+            $tempPath = $tempDir . $formData[$formField];
+            if (file_exists($tempPath)) {
+                // セキュアなファイル名を維持しながら移動
+                $newPath = $userDir . $formData[$formField];
+                if (rename($tempPath, $newPath)) {
+                    // DBを更新（ファイル名のみ保存）
+                    $updateSql = "UPDATE registrations SET {$dbField} = :filename WHERE id = :id";
+                    $updateStmt = $db->prepare($updateSql);
+                    $updateStmt->execute([
+                        ':filename' => $formData[$formField],
+                        ':id' => $userId
+                    ]);
+                    error_log("Moved image {$formField} to user directory");
+                }
+            }
+        }
     }
-    if (!empty($formData['business-card_file'])) {
-        moveTempFile($formData['business-card_file']);
+    
+    // 一時ディレクトリをクリーンアップ
+    if (is_dir($tempDir)) {
+        array_map('unlink', glob($tempDir . '*'));
+        rmdir($tempDir);
     }
     
     // セッションクリア

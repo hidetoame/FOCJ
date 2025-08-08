@@ -53,6 +53,57 @@ $html = str_replace('href="C1_members-list.html"', 'href="members-list.php"', $h
 
 // フォームのアクションを調整（確認画面へ）
 $html = str_replace('action="C4_edit-member-info-confirm.html"', 'action="edit-member-info-confirm.php?id=' . $id . '"', $html);
+// formタグにenctype追加（method="post"の部分を置換）
+$html = str_replace('<form action="edit-member-info-confirm.php?id=' . $id . '" method="post">', 
+                    '<form action="edit-member-info-confirm.php?id=' . $id . '" method="post" enctype="multipart/form-data">', 
+                    $html);
+
+// 添付書類セクションの更新
+// 運転免許証
+$licenseImage = $member['license_image'] ?: $member['drivers_license_file'];
+if ($licenseImage) {
+    $licenseHtml = '<a href="view-user-image.php?user_id=' . $id . '&file=' . h($licenseImage) . '" class="button button--line" target="_blank">現在の運転免許証を確認する</a>';
+    $html = str_replace(
+        '<a href="/templates/member-management/assets/img/dummy_drivers-license.jpg" class="button button--line" target="_blank">現在の運転免許証を確認する</a>',
+        $licenseHtml,
+        $html
+    );
+} else {
+    $html = str_replace(
+        '<a href="/templates/member-management/assets/img/dummy_drivers-license.jpg" class="button button--line" target="_blank">現在の運転免許証を確認する</a>',
+        '<a class="button button--line button--disable" target="_blank">運転免許証がアップロードされていません</a>',
+        $html
+    );
+}
+
+// 車検証
+$vehicleImage = $member['vehicle_inspection_image'] ?: $member['vehicle_inspection_file'];
+if ($vehicleImage) {
+    $vehicleHtml = '<a href="view-user-image.php?user_id=' . $id . '&file=' . h($vehicleImage) . '" class="button button--line" target="_blank">現在の車検証を確認する</a>';
+    $html = str_replace(
+        '<a href="/templates/member-management/assets/img/dummy_vehicle-inspection.png" class="button button--line" target="_blank">現在の車検証を確認する</a>',
+        $vehicleHtml,
+        $html
+    );
+} else {
+    $html = str_replace(
+        '<a href="/templates/member-management/assets/img/dummy_vehicle-inspection.png" class="button button--line" target="_blank">現在の車検証を確認する</a>',
+        '<a class="button button--line button--disable" target="_blank">車検証がアップロードされていません</a>',
+        $html
+    );
+}
+
+// 名刺
+$businessCardImage = $member['business_card_image'] ?: $member['business_card_file'];
+if ($businessCardImage) {
+    $businessCardHtml = '<a href="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" class="button button--line" target="_blank">現在の名刺を確認する</a>';
+    // 名刺は元々disableだったので、そのパターンを探して置換
+    $html = str_replace(
+        '<a class="button button--line button--disable" target="_blank">名刺がアップロードされていません</a>',
+        $businessCardHtml,
+        $html
+    );
+}
 
 // 会員番号（IDの下4桁）
 $memberNumber = substr('FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), -4);

@@ -154,37 +154,48 @@ $html = preg_replace(
     $html
 );
 
-// 添付ファイルのセクションを追加
-$attachments = '';
-if ($registration['drivers_license_file']) {
-    $attachments .= '<div class="registration-detail-item">
-        <div class="registration-detail-name">運転免許証</div>
-        <div class="registration-detail-value"><a href="/uploads/' . h($registration['drivers_license_file']) . '" target="_blank">表示</a></div>
-    </div>';
+// 添付書類セクションの画像を置換
+// 運転免許証
+$licenseImage = $registration['license_image'] ?: $registration['drivers_license_file'];
+if ($licenseImage) {
+    $licenseHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($licenseImage) . '" width="640" height="427" alt="">';
+} else {
+    $licenseHtml = '<span style="color: #999;">画像なし</span>';
 }
-if ($registration['vehicle_inspection_file']) {
-    $attachments .= '<div class="registration-detail-item">
-        <div class="registration-detail-name">車検証</div>
-        <div class="registration-detail-value"><a href="/uploads/' . h($registration['vehicle_inspection_file']) . '" target="_blank">表示</a></div>
-    </div>';
-}
-if ($registration['business_card_file']) {
-    $attachments .= '<div class="registration-detail-item">
-        <div class="registration-detail-name">名刺</div>
-        <div class="registration-detail-value"><a href="/uploads/' . h($registration['business_card_file']) . '" target="_blank">表示</a></div>
-    </div>';
-}
+$html = preg_replace(
+    '/<div class="registration-detail-name">運転免許証<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
+    '<div class="registration-detail-name">運転免許証</div>
+                  <div class="registration-detail-value">' . $licenseHtml . '</div>',
+    $html
+);
 
-if ($attachments) {
-    $attachments = '<h3>添付ファイル</h3>' . $attachments;
-    $html = str_replace('</div>
-              </div>
-
-              <div class="button-area">', $attachments . '</div>
-              </div>
-
-              <div class="button-area">', $html);
+// 車検証
+$vehicleImage = $registration['vehicle_inspection_image'] ?: $registration['vehicle_inspection_file'];
+if ($vehicleImage) {
+    $vehicleHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($vehicleImage) . '" width="480" height="288" alt="">';
+} else {
+    $vehicleHtml = '<span style="color: #999;">画像なし</span>';
 }
+$html = preg_replace(
+    '/<div class="registration-detail-name">車検証<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
+    '<div class="registration-detail-name">車検証</div>
+                  <div class="registration-detail-value">' . $vehicleHtml . '</div>',
+    $html
+);
+
+// 名刺
+$businessCardImage = $registration['business_card_image'] ?: $registration['business_card_file'];
+if ($businessCardImage) {
+    $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" width="400" height="250" alt="">';
+} else {
+    $businessCardHtml = '-';
+}
+$html = preg_replace(
+    '/<div class="registration-detail-name">名刺<\/div>\s*<div class="registration-detail-value">-<\/div>/',
+    '<div class="registration-detail-name">名刺</div>
+                  <div class="registration-detail-value">' . $businessCardHtml . '</div>',
+    $html
+);
 
 // ステータス表示を更新
 $statusText = '未対応';

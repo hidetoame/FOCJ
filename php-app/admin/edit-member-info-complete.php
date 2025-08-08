@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // セッションからデータを取得
 $id = $_SESSION['edit_member_id'] ?? 0;
 $postData = $_SESSION['edit_member_data'] ?? [];
+$uploadedFiles = $_SESSION['edit_member_files'] ?? [];
 
 if (!$id || empty($postData)) {
     header('Location: members-list.php');
@@ -105,9 +106,75 @@ $params = [
 
 $stmt->execute($params);
 
+// 画像の更新処理（新しい画像がアップロードされた場合のみ）
+$userDir = '/var/www/html/user_images/' . $id . '/';
+if (!is_dir($userDir)) {
+    mkdir($userDir, 0755, true);
+}
+
+$tempDir = '/var/www/html/user_images/temp/edit_' . session_id() . '/';
+
+// 画像フィールドのマッピング
+$imageFieldMap = [
+    'drivers-license_new_file' => 'license_image',
+    'vehicle-inspection_new_file' => 'vehicle_inspection_image', 
+    'business-card_new_file' => 'business_card_image'
+];
+
+// 新しい画像のみ更新
+foreach ($imageFieldMap as $formField => $dbField) {
+    if (!empty($postData[$formField])) {
+        $tempPath = $tempDir . $postData[$formField];
+        if (file_exists($tempPath)) {
+            error_log("Processing image update for $dbField: " . $postData[$formField]);
+            
+            // 古い画像を取得（削除用）
+            $oldImageSql = "SELECT {$dbField} FROM registrations WHERE id = :id";
+            $oldImageStmt = $db->prepare($oldImageSql);
+            $oldImageStmt->execute([':id' => $id]);
+            $oldImage = $oldImageStmt->fetchColumn();
+            
+            // 古い画像を削除
+            if ($oldImage) {
+                $oldImagePath = $userDir . $oldImage;
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                    error_log("Deleted old image: " . $oldImagePath);
+                }
+            }
+            
+            // 新しい画像を移動
+            $newPath = $userDir . $postData[$formField];
+            if (rename($tempPath, $newPath)) {
+                // DBを更新
+                $updateSql = "UPDATE registrations SET {$dbField} = :filename WHERE id = :id";
+                $updateStmt = $db->prepare($updateSql);
+                $updateStmt->execute([
+                    ':filename' => $postData[$formField],
+                    ':id' => $id
+                ]);
+                
+                error_log("Updated image field {$dbField} for user {$id}");
+            }
+        }
+    }
+}
+
+// 一時ディレクトリをクリーンアップ
+if (is_dir($tempDir)) {
+    $files = glob($tempDir . '*');
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+    rmdir($tempDir);
+}
+
 // セッションをクリア
 unset($_SESSION['edit_member_data']);
 unset($_SESSION['edit_member_id']);
+unset($_SESSION['edit_member_files']);
 
 // テンプレート読み込み
 $html = file_get_contents('/var/www/html/templates/member-management/C5_edit-member-info-complete.html');
