@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>FOCJ Membership Management</title>
+    <link rel="icon" href="assets/img/favicon.ico" />
+    <link rel="stylesheet" href="assets/lib/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="assets/lib/simplebar/simplebar.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="common">
+        <div class="header-inner">
+          <div class="header-logo"><img src="assets/img/logo_focj.svg" width="100" height="100" alt="" /></div>
+          <h1 class="header-title">
+            <span class="header-title-line">FOCJ Membership</span> <span class="header-title-line">Management</span>
+          </h1>
+          <div class="header-username icon icon-user icon--text">username01</div>
+          <div class="header-logout">
+            <form action="0_login.html" method="post"><button type="submit" class="button button--line">ログアウト</button></form>
+          </div>
+        </div>
+      </header>
+      <div class="contents admin">
+        <nav class="admin-menu" data-simplebar>
+          <ul class="admin-menu-list">
+            <li class="admin-menu-item">
+              <a href="A2_registration-list.html" class="admin-menu-link">会員希望申請一覧</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="B1_edit-mail-index.html" class="admin-menu-link">案内メール編集</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="C1_members-list.html" class="admin-menu-link --current">承認済み会員一覧</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="admin-main">
+          <div class="admin-inner">
+            <h2 class="admin-contents-title">会員情報の変更</h2>
+
+            <form action="C4_edit-member-info-confirm.html" method="post">
+              <div class="member-detail-contents">
+                <div class="member-detail-block">
+                  <div class="form-contents">
+                    <h3>会員の情報</h3>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">
+                            会員番号
+                            <div class="form-require">必須</div>
+                          </div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            placeholder="会員番号"
+                            id="member-num"
+                            name="member-num"
+                            value="2000"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">
+                        氏名
+                        <div class="form-require">必須</div>
+                      </div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-name">姓</div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            placeholder="姓"
+                            id="familyname"
+                            name="familyname"
+                            value="山田"
+                            required
+                          />
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-name">名</div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            placeholder="名"
+                            id="firstname"
+                            name="firstname"
+                            value="太郎"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">氏名（フリガナ）<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-name">姓</div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            placeholder="セイ"
+                            id="familyname-kana"
+                            name="familyname-kana"
+                            value="ヤマダ"
+                            required
+                          />
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-name">名</div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            placeholder="メイ"
+                            id="firstname-kana"
+                            name="firstname-kana"
+                            value="タロウ"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">氏名（ローマ字表記）<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="name-alphabet"
+                            name="name-alphabet"
+                            value="TARO YAMADA"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">ご連絡先住所<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <span class="p-country-name" style="display: none">Japan</span>
+                        <label class="form-item-label">
+                          <div class="form-item-name">郵便番号</div>
+                          <input
+                            type="text"
+                            class="input-text p-postal-code"
+                            id="postal-code"
+                            name="postal-code"
+                            value="160-0022"
+                            required
+                          />
+                        </label>
+                      </div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-name">都道府県</div>
+                          <select
+                            class="input-select p-region"
+                            id="prefecture"
+                            name="prefecture"
+                            required
+                          >
+                            <option value="" selected>選択してください</option>
+                            <option value="北海道">北海道</option>
+                            <option value="青森県">青森県</option>
+                            <option value="岩手県">岩手県</option>
+                            <option value="宮城県">宮城県</option>
+                            <option value="秋田県">秋田県</option>
+                            <option value="山形県">山形県</option>
+                            <option value="福島県">福島県</option>
+                            <option value="茨城県">茨城県</option>
+                            <option value="栃木県">栃木県</option>
+                            <option value="群馬県">群馬県</option>
+                            <option value="埼玉県">埼玉県</option>
+                            <option value="千葉県">千葉県</option>
+                            <option value="東京都" selected>東京都</option>
+                            <option value="神奈川県">神奈川県</option>
+                            <option value="新潟県">新潟県</option>
+                            <option value="富山県">富山県</option>
+                            <option value="石川県">石川県</option>
+                            <option value="福井県">福井県</option>
+                            <option value="山梨県">山梨県</option>
+                            <option value="長野県">長野県</option>
+                            <option value="岐阜県">岐阜県</option>
+                            <option value="静岡県">静岡県</option>
+                            <option value="愛知県">愛知県</option>
+                            <option value="三重県">三重県</option>
+                            <option value="滋賀県">滋賀県</option>
+                            <option value="京都府">京都府</option>
+                            <option value="大阪府">大阪府</option>
+                            <option value="兵庫県">兵庫県</option>
+                            <option value="奈良県">奈良県</option>
+                            <option value="和歌山県">和歌山県</option>
+                            <option value="鳥取県">鳥取県</option>
+                            <option value="島根県">島根県</option>
+                            <option value="岡山県">岡山県</option>
+                            <option value="広島県">広島県</option>
+                            <option value="山口県">山口県</option>
+                            <option value="徳島県">徳島県</option>
+                            <option value="香川県">香川県</option>
+                            <option value="愛媛県">愛媛県</option>
+                            <option value="高知県">高知県</option>
+                            <option value="福岡県">福岡県</option>
+                            <option value="佐賀県">佐賀県</option>
+                            <option value="長崎県">長崎県</option>
+                            <option value="熊本県">熊本県</option>
+                            <option value="大分県">大分県</option>
+                            <option value="宮崎県">宮崎県</option>
+                            <option value="鹿児島県">鹿児島県</option>
+                            <option value="沖縄県">沖縄県</option>
+                          </select>
+                        </label>
+                      </div>
+
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">市区町村・番地</div>
+                          <input
+                            type="text"
+                            class="input-text p-locality p-street-address p-extended-address"
+                            id="city-address"
+                            name="city-address"
+                            value="新宿区1-1-1"
+                            required
+                          />
+                        </label>
+                      </div>
+
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">建物名・部屋番号</div>
+                          <input type="text" class="input-text" id="building-name" name="building-name" value="〇〇〇〇ビル 23F" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">ご連絡先住所の種別<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="address-type" id="address-home" />
+                            <div class="form-item-name">自宅</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" name="address-type" class="input-radio" checked />
+                            <div class="form-item-name" id="address-work">勤務先</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">携帯電話番号<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="mobile-number"
+                            name="mobile-number"
+                            value="090-1234-5678"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">電話番号</div>
+                          <input type="text" class="input-text" id="phone-number" name="phone-number" value="03-0000-0000" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">生年月日<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label --date">
+                          <div class="form-item-date">
+                            <input
+                              type="text"
+                              class="input-text"
+                              id="birth-year"
+                              name="birth-year"
+                              placeholder="西暦"
+                              value="1975"
+                              required
+                            />
+                            <div class="form-item-name">年</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-date">
+                            <input
+                              type="text"
+                              class="input-text"
+                              id="birth-month"
+                              name="birth-month"
+                              placeholder="月"
+                              value="1"
+                              required
+                            />
+                            <div class="form-item-name">月</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-date">
+                            <input
+                              type="text"
+                              class="input-text"
+                              placeholder="日"
+                              id="birth-day"
+                              name="birth-day"
+                              value="1"
+                              required
+                            />
+                            <div class="form-item-name">日</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">メールアドレス<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="mail-address"
+                            name="mail-address"
+                            value="example@example.com"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-group-name">職業<div class="form-require">必須</div></div>
+                          <textarea
+                            class="input-textarea"
+                            id="occupation"
+                            name="occupation"
+                            required
+                          >〇〇株式会社 代表取締役
+その他複数の会社経営</textarea>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-group-name">自己紹介<div class="form-require">必須</div></div>
+                          <textarea
+                            class="input-textarea"
+                            id="self-introduction"
+                            name="self-introduction"
+                            required
+                          >自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト
+
+自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト</textarea>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">お付き合いのあるFerrariオフィシャルディーラー</div>
+                          <select class="input-select" id="relationship-dealer" name="relationship-dealer">
+                            <option value="" selected>選択してください</option>
+                            MID Sapporo
+                            <option value="MID Sapporo">MID Sapporo</option>
+                            <option value="コーンズ芝ショールーム" selected>コーンズ芝ショールーム</option>
+                            <option value="Rosso Scuderia">Rosso Scuderia</option>
+                            <option value="Nicole Competizione">Nicole Competizione</option>
+                            <option value="コーンズ名古屋ショールーム">コーンズ名古屋ショールーム</option>
+                            <option value="コーンズ大阪ショールーム">コーンズ大阪ショールーム</option>
+                            <option value="Auto Cavallino">Auto Cavallino</option>
+                            <option value="エムオート・イタリア">エムオート・イタリア</option>
+                            <option value="ヨーロピアンヴァージョン">ヨーロピアンヴァージョン</option>
+                            <option value="Auto Speciale">Auto Speciale</option>
+                            <option value="ヤナセフィオラーノモトーリ">ヤナセフィオラーノモトーリ</option>
+                          </select>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">担当セールス名</div>
+                          <input type="text" class="input-text" id="sales-person" name="sales-person" />
+
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>イベントに参加するフェラーリの情報</h3>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">車種・Model名<div class="form-require">必須</div></div>
+                          <input type="text" class="input-text" id="car-model" value="○○○○" required />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">年式<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="car-year"
+                            name="car-year"
+                            value="○○○○"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">車体色<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="car-color"
+                            name="car-color"
+                            value="○○○○"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">登録No<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="car-number"
+                            name="car-number"
+                            value="○○○○"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>ご紹介者の情報</h3>
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">ご紹介者-1<div class="form-require">必須</div></div>
+                          <input
+                            type="text"
+                            class="input-text"
+                            id="referrer1"
+                            name="referrer1"
+                            value="〇〇〇〇さん"
+                            required
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">ご紹介者ディーラー名</div>
+                          <select class="input-select" id="referrer-dealer" name="referrer-dealer">
+                            <option value="" selected>選択してください</option>
+                            MID Sapporo
+                            <option value="MID Sapporo">MID Sapporo</option>
+                            <option value="コーンズ芝ショールーム">コーンズ芝ショールーム</option>
+                            <option value="Rosso Scuderia">Rosso Scuderia</option>
+                            <option value="Nicole Competizione">Nicole Competizione</option>
+                            <option value="コーンズ名古屋ショールーム">コーンズ名古屋ショールーム</option>
+                            <option value="コーンズ大阪ショールーム">コーンズ大阪ショールーム</option>
+                            <option value="Auto Cavallino">Auto Cavallino</option>
+                            <option value="エムオート・イタリア">エムオート・イタリア</option>
+                            <option value="ヨーロピアンヴァージョン">ヨーロピアンヴァージョン</option>
+                            <option value="Auto Speciale">Auto Speciale</option>
+                            <option value="ヤナセフィオラーノモトーリ">ヤナセフィオラーノモトーリ</option>
+                          </select>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">ご紹介者-2（理事）</div>
+                          <input type="text" class="input-text" id="referrer2" name="referrer2" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>添付書類</h3>
+
+                    <p>変更する場合のみアップロードしてください。</p>
+
+                    <div class="form-group">
+                      <div class="form-group-name">運転免許証</div>
+                      <div class="form-item-line mb20">
+                        <a href="assets/img/dummy_drivers-license.jpg" class="button button--line" target="_blank">現在の運転免許証を確認する</a>
+                      </div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">変更する</div>
+                          <input
+                            type="file"
+                            class="input-file"
+                            id="drivers-license"
+                            name="drivers-license"
+                            accept="image/*"
+                          />
+                        </label>
+                      </div>
+                      <div class="form-group-description">
+                        ファイルサイズは 100 MB 以下
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">車検証</div>
+                      <div class="form-item-line mb20">
+                        <a href="assets/img/dummy_vehicle-inspection.png" class="button button--line" target="_blank">現在の車検証を確認する</a>
+                      </div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">変更する</div>
+                          <input
+                            type="file"
+                            class="input-file"
+                            id="vehicle-inspection"
+                            name="vehicle-inspection"
+                            accept="image/*"
+                          />
+                        </label>
+                      </div>
+                      <div class="form-group-description">
+                        ファイルサイズは 100 MB 以下
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">名刺</div>
+                      <div class="form-item-line mb20">
+                        <a class="button button--line button--disable" target="_blank">名刺がアップロードされていません</a>
+                      </div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">変更する</div>
+                          <input
+                            type="file"
+                            class="input-file"
+                            id="business-card"
+                            name="business-card"
+                            accept="image/*"
+                          />
+                        </label>
+                      </div>
+                      <div class="form-group-description">
+                        ファイルサイズは 100 MB 以下
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>入会金</h3>
+                    <div class="form-group">
+                      <div class="form-group-name">支払い状況<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="entry-fee-status" id="entry-fee-paid" checked />
+                            <div class="form-item-name">支払い済み</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="entry-fee-status" id="entry-fee-unpaid" />
+                            <div class="form-item-name">未払い</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い年月日<div class="form-require">支払い済みの場合は必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="date"
+                              class="input-date"
+                              id="entry-fee-paid-date"
+                              name="entry-fee-paid-date"
+                              value="2025-01-01"
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い期限<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="date"
+                              class="input-date"
+                              id="entry-fee-due-date"
+                              name="entry-fee-due-date"
+                              value="2025-01-01"
+                              required
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">金額<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="number"
+                              class="input-text"
+                              id="entry-fee-amount"
+                              name="entry-fee-amount"
+                              value="0"
+                              min="0"
+                              required
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <hr />
+
+                    <h3>当年（2025年）年会費</h3>
+                    <div class="form-group">
+                      <div class="form-group-name">支払い状況<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short mb20">
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="annual-fee-status-2025" id="annual-fee-paid-2025"/>
+                            <div class="form-item-name">支払い済み</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label --align-left">
+                          <div class="form-item-radio">
+                            <input type="radio" class="input-radio" name="annual-fee-status-2025" id="annual-fee-unpaid-2025" checked />
+                            <div class="form-item-name">未払い</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い年月日<div class="form-require">支払い済みの場合は必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                            type="date"
+                            class="input-date"
+                            id="annual-fee-paid-date-2025"
+                            name="annual-fee-paid-date-2025"
+                            value=""
+                          />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">支払い期限<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                            type="date"
+                            class="input-date"
+                            id="annual-fee-due-date-2025"
+                            name="annual-fee-due-date-2025"
+                            value="2025-01-01"
+                            required
+                          />
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-item-label">
+                        <div class="form-group-name">金額<div class="form-require">必須</div></div>
+                        <div class="form-item-line --short">
+                          <input
+                              type="number"
+                              class="input-text"
+                              id="annual-fee-amount-2025"
+                              name="annual-fee-amount-2025"
+                              value="0"
+                              min="0"
+                              required
+                            />
+                        </div>
+                      </label>
+                    </div>
+
+                    <hr />
+
+                    <h3>年会費履歴</h3>
+
+                    <div class="form-group">
+                      <div class="form-group-name">2024年</div>
+                        <div class="form-item-line"><div class="form-item-name">支払い状況</div></div>
+                        <div class="form-item-line mb20">
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2024" id="annual-fee-paid-2024" checked />
+                              <div class="form-item-name">支払い済み</div>
+                            </div>
+                          </label>
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2024" id="annual-fee-unpaid-2024" />
+                              <div class="form-item-name">未払い</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">支払い年月日</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="date"
+                                class="input-date"
+                                id="annual-fee-paid-date-2024"
+                                name="annual-fee-paid-date-2024"
+                                value="2024-01-01"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">金額</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="number"
+                                class="input-text"
+                                id="annual-fee-amount-2024"
+                                name="annual-fee-amount-2024"
+                                value="0"
+                                min="0"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                      <div class="form-group-name">2023年</div>
+                        <div class="form-item-line"><div class="form-item-name">支払い状況</div></div>
+                        <div class="form-item-line mb20">
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2023" id="annual-fee-paid-2023" checked />
+                              <div class="form-item-name">支払い済み</div>
+                            </div>
+                          </label>
+                          <label class="form-item-label --align-left">
+                            <div class="form-item-radio">
+                              <input type="radio" class="input-radio" name="annual-fee-status-2023" id="annual-fee-unpaid-2023" />
+                              <div class="form-item-name">未払い</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">支払い年月日</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="date"
+                                class="input-date"
+                                id="annual-fee-paid-date-2023"
+                                name="annual-fee-paid-date-2023"
+                                value="2023-02-01"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                        <div class="mb20">
+                          <label class="form-item-label">
+                            <div class="form-item-line"><div class="form-item-name">金額</div></div>
+                            <div class="form-item-line --short">
+                              <input
+                                type="number"
+                                class="input-text"
+                                id="annual-fee-amount-2023"
+                                name="annual-fee-amount-2023"
+                                value="0"
+                                min="0"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="member-detail-block --sidebar">
+                  <div class="member-detail-control button-area">
+                    <div class="member-detail-control-item">
+                      <button type="submit" class="button button--primary">変更内容の確認</button>
+                    </div>
+                    <div class="member-detail-control-item">
+                      <a href="C2_member-detail.html" class="button button--line">変更せずに戻る</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

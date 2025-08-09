@@ -15,7 +15,7 @@ $db = Database::getInstance()->getConnection();
 
 // 承認済みかつ退会していない会員のみを取得
 $sql = "SELECT 
-        'FOCJ-' || LPAD(id::text, 5, '0') as member_number,
+        member_number,
         approved_at,
         family_name,
         first_name,
@@ -119,8 +119,14 @@ foreach ($members as $member) {
     // 年式
     $model_year = $member['model_year'] ? $member['model_year'] . '年' : '';
     
+    // 会員番号をフォーマット
+    $memberNumber = '';
+    if ($member['member_number']) {
+        $memberNumber = 'FOCJ-' . str_pad($member['member_number'], 5, '0', STR_PAD_LEFT);
+    }
+    
     $row = [
-        $member['member_number'],
+        $memberNumber,
         $approved_date,
         $member['family_name'],
         $member['first_name'],

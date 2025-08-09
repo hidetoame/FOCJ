@@ -70,7 +70,7 @@ try {
                     annual_fees = :annual_fees,
                     entry_fee_description = :entry_fee_description,
                     annual_fee_description = :annual_fee_description,
-                    updated_at = NOW(),
+                    updated_at = CURRENT_TIMESTAMP,
                     updated_by = :updated_by
                 WHERE id = 1";
         } else {

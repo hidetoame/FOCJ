@@ -45,8 +45,8 @@ function sendApprovalEmail($db, $registrationId) {
     // $result = mail($to, $subject, $body, $headers);
     
     // メール履歴を記録
-    $sql = "INSERT INTO mail_history (template_id, recipient_email, subject, body, sent_at, sent_by) 
-            VALUES (:template_id, :email, :subject, :body, NOW(), 'system')";
+    $sql = "INSERT INTO mail_history (template_id, recipient_email, subject, body, sent_at, status) 
+            VALUES (:template_id, :email, :subject, :body, CURRENT_TIMESTAMP, '送信済み')";
     $stmt = $db->prepare($sql);
     $stmt->execute([
         ':template_id' => $template['template_id'],
@@ -83,8 +83,8 @@ function sendCustomApprovalEmail($db, $registrationId, $customContent) {
     // $result = mail($to, $subject, $customContent, $headers);
     
     // メール履歴を記録（テンプレートIDはNULLとして記録）
-    $sql = "INSERT INTO mail_history (template_id, recipient_email, subject, body, sent_at, sent_by) 
-            VALUES (NULL, :email, :subject, :body, NOW(), 'system')";
+    $sql = "INSERT INTO mail_history (template_id, recipient_email, subject, body, sent_at, status) 
+            VALUES (NULL, :email, :subject, :body, CURRENT_TIMESTAMP, '送信済み')";
     $stmt = $db->prepare($sql);
     $stmt->execute([
         ':email' => $to,
@@ -138,8 +138,8 @@ function sendRejectionEmail($db, $registrationId, $reason = '') {
     // $result = mail($to, $subject, $body, $headers);
     
     // メール履歴を記録
-    $sql = "INSERT INTO mail_history (template_id, recipient_email, subject, body, sent_at, sent_by) 
-            VALUES (:template_id, :email, :subject, :body, NOW(), 'system')";
+    $sql = "INSERT INTO mail_history (template_id, recipient_email, subject, body, sent_at, status) 
+            VALUES (:template_id, :email, :subject, :body, CURRENT_TIMESTAMP, '送信済み')";
     $stmt = $db->prepare($sql);
     $stmt->execute([
         ':template_id' => $template['template_id'],

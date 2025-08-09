@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>FOCJ Membership Management</title>
+    <link rel="icon" href="assets/img/favicon.ico" />
+    <link rel="stylesheet" href="assets/lib/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="assets/lib/simplebar/simplebar.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="common">
+        <div class="header-inner">
+          <div class="header-logo"><img src="assets/img/logo_focj.svg" width="100" height="100" alt="" /></div>
+          <h1 class="header-title">
+            <span class="header-title-line">FOCJ Membership</span> <span class="header-title-line">Management</span>
+          </h1>
+          <div class="header-username icon icon-user icon--text">username01</div>
+          <div class="header-logout">
+            <form action="0_login.html" method="post"><button type="submit" class="button button--line">ログアウト</button></form>
+          </div>
+        </div>
+      </header>
+      <div class="contents admin">
+        <nav class="admin-menu" data-simplebar>
+          <ul class="admin-menu-list">
+            <li class="admin-menu-item">
+              <a href="A2_registration-list.html" class="admin-menu-link">会員希望申請一覧</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="B1_edit-mail-index.html" class="admin-menu-link --current">案内メール編集</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="C1_members-list.html" class="admin-menu-link">承認済み会員一覧</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="admin-main">
+          <div class="admin-inner">
+            <h2 class="admin-contents-title">メールテンプレート編集完了</h2>
+            <p class="admin-contents-message">メールテンプレート「（テンプレート名）」の編集が完了しました。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

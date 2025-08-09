@@ -24,24 +24,39 @@ try {
     if ($method === 'GET') {
         // マスター設定を取得
         if ($action === 'getMaster') {
-            $sql = "SELECT * FROM fee_master LIMIT 1";
+            $sql = "SELECT * FROM fee_master WHERE membership_type = 'regular' LIMIT 1";
             $stmt = $db->query($sql);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // デフォルトの年会費配列
+            $currentYear = date('Y');
+            $defaultAnnualFees = [
+                ['year' => $currentYear, 'amount' => 50000, 'description' => $currentYear . '年度年会費'],
+                ['year' => $currentYear + 1, 'amount' => 50000, 'description' => ($currentYear + 1) . '年度年会費']
+            ];
             
             if (!$data) {
                 // データがない場合はデフォルト値を返す
                 $data = [
                     'entry_fee' => 300000,
-                    'annual_fees' => json_encode([
-                        ['year' => 2025, 'amount' => 50000, 'description' => '2025年度年会費'],
-                        ['year' => 2026, 'amount' => 50000, 'description' => '2026年度年会費']
-                    ])
+                    'annual_fees' => $defaultAnnualFees,
+                    'entry_fee_description' => '初回登録時の入会金',
+                    'annual_fee_description' => '年度ごとの年会費'
                 ];
-            }
-            
-            // JSONデータをデコード
-            if (isset($data['annual_fees']) && is_string($data['annual_fees'])) {
-                $data['annual_fees'] = json_decode($data['annual_fees'], true);
+            } else {
+                // データベースのannual_feeを配列形式に変換
+                $data['annual_fees'] = $defaultAnnualFees;
+                if (isset($data['annual_fee'])) {
+                    $data['annual_fees'][0]['amount'] = floatval($data['annual_fee']);
+                    $data['annual_fees'][1]['amount'] = floatval($data['annual_fee']);
+                }
+                
+                // descriptionから説明を分離
+                if (isset($data['description'])) {
+                    $lines = explode("\n", $data['description']);
+                    $data['entry_fee_description'] = str_replace('入会金: ', '', $lines[0] ?? '');
+                    $data['annual_fee_description'] = str_replace('年会費: ', '', $lines[1] ?? '');
+                }
             }
             
             echo json_encode($data);
@@ -53,7 +68,7 @@ try {
             $sql = "SELECT 
                     m.member_id,
                     m.member_number,
-                    r.family_name || ' ' || r.first_name as member_name
+                    CONCAT(r.family_name, ' ', r.first_name) as member_name
                 FROM members m
                 LEFT JOIN registrations r ON r.email = m.email
                 WHERE m.member_id = :member_id";
@@ -71,8 +86,12 @@ try {
             if (!$feeData) {
                 // membership_feesレコードがない場合は作成
                 $sql = "INSERT INTO membership_fees (member_id, membership_type, entry_fee, payment_status, annual_fee) 
-                        VALUES (:member_id, 'メール会員', 300000, '未払い', '[]'::jsonb)
-                        RETURNING *";
+                        VALUES (:member_id, 'regular', 300000, '未払い', '[]')";
+                $stmt = $db->prepare($sql);
+                $stmt->execute([':member_id' => $memberId]);
+                
+                // Get the inserted record
+                $sql = "SELECT * FROM membership_fees WHERE member_id = :member_id";
                 $stmt = $db->prepare($sql);
                 $stmt->execute([':member_id' => $memberId]);
                 $feeData = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -105,8 +124,8 @@ try {
             $updatedBy = $_SESSION['admin_username'] ?? 'admin';
             error_log("Updated by: " . $updatedBy);
             
-            // 既存レコードの確認
-            $sql = "SELECT COUNT(*) FROM fee_master";
+            // 通常会員のレコードが存在するか確認
+            $sql = "SELECT COUNT(*) FROM fee_master WHERE membership_type = 'regular'";
             error_log("Executing SQL: " . $sql);
             
             try {
@@ -117,41 +136,58 @@ try {
                 throw $e;
             }
             
+            // 年会費配列から現在年度の年会費を取得
+            $currentYear = date('Y');
+            $annualFee = 0;
+            foreach ($data['annual_fees'] as $fee) {
+                if ($fee['year'] == $currentYear) {
+                    $annualFee = $fee['amount'];
+                    break;
+                }
+            }
+            
+            // 説明文を結合
+            $description = "入会金: " . ($data['entry_fee_description'] ?? '') . "\n";
+            $description .= "年会費: " . ($data['annual_fee_description'] ?? '');
+            
             if ($count > 0) {
                 // 更新
                 $sql = "UPDATE fee_master SET 
                         entry_fee = :entry_fee,
-                        annual_fees = :annual_fees,
-                        entry_fee_description = :entry_fee_description,
-                        annual_fee_description = :annual_fee_description,
-                        updated_at = NOW(),
-                        updated_by = :updated_by
-                    WHERE id = 1";
+                        annual_fee = :annual_fee,
+                        description = :description,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE membership_type = 'regular'";
+                    
+                $stmt = $db->prepare($sql);
+                $result = $stmt->execute([
+                    ':entry_fee' => $data['entry_fee'],
+                    ':annual_fee' => $annualFee,
+                    ':description' => trim($description)
+                ]);
             } else {
                 // 新規作成
                 $sql = "INSERT INTO fee_master (
+                        membership_type,
                         entry_fee,
-                        annual_fees,
-                        entry_fee_description,
-                        annual_fee_description,
-                        updated_by
+                        annual_fee,
+                        description,
+                        is_active
                     ) VALUES (
+                        'regular',
                         :entry_fee,
-                        :annual_fees,
-                        :entry_fee_description,
-                        :annual_fee_description,
-                        :updated_by
+                        :annual_fee,
+                        :description,
+                        1
                     )";
+                    
+                $stmt = $db->prepare($sql);
+                $result = $stmt->execute([
+                    ':entry_fee' => $data['entry_fee'],
+                    ':annual_fee' => $annualFee,
+                    ':description' => trim($description)
+                ]);
             }
-            
-            $stmt = $db->prepare($sql);
-            $result = $stmt->execute([
-                ':entry_fee' => $data['entry_fee'],
-                ':annual_fees' => json_encode($data['annual_fees']),
-                ':entry_fee_description' => $data['entry_fee_description'] ?? '',
-                ':annual_fee_description' => $data['annual_fee_description'] ?? '',
-                ':updated_by' => $updatedBy
-            ]);
             
             echo json_encode(['success' => $result]);
             exit;
@@ -165,7 +201,7 @@ try {
                     entry_fee_payment_method = :payment_method,
                     entry_fee_payment_deadline = :payment_deadline,
                     entry_fee_notes = :notes,
-                    updated_at = NOW()
+                    updated_at = CURRENT_TIMESTAMP
                 WHERE member_id = :member_id";
             
             $stmt = $db->prepare($sql);
@@ -185,6 +221,10 @@ try {
             // 年会費の更新
             $year = $data['year'];
             
+            // デバッグログ
+            error_log("Update annual fee - Year: " . $year . ", MemberID: " . $memberId);
+            error_log("Update annual fee - Data: " . json_encode($data));
+            
             // 現在のannual_feeを取得
             $sql = "SELECT annual_fee FROM membership_fees WHERE member_id = :member_id";
             $stmt = $db->prepare($sql);
@@ -192,11 +232,15 @@ try {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
             $annualFees = json_decode($result['annual_fee'], true) ?? [];
+            error_log("Current annual fees: " . json_encode($annualFees));
             
             // 該当年度のデータを探す
             $found = false;
             foreach ($annualFees as &$fee) {
-                if ($fee['year'] == $year) {
+                // 年度を整数として比較
+                error_log("Comparing year: " . $fee['year'] . " (type: " . gettype($fee['year']) . ") with " . $year . " (type: " . gettype($year) . ")");
+                if (intval($fee['year']) == intval($year)) {
+                    error_log("Found matching year! Updating...");
                     $fee['amount'] = $data['amount'];
                     $fee['status'] = $data['status'];
                     $fee['payment_date'] = $data['payment_date'] ?: null;
@@ -226,10 +270,13 @@ try {
                 return $b['year'] - $a['year'];
             });
             
+            // 更新後のデータをログ出力
+            error_log("Updated annual fees after sort: " . json_encode($annualFees));
+            
             // データベースを更新
             $sql = "UPDATE membership_fees SET 
                     annual_fee = :annual_fee,
-                    updated_at = NOW()
+                    updated_at = CURRENT_TIMESTAMP
                 WHERE member_id = :member_id";
             
             $stmt = $db->prepare($sql);
@@ -237,6 +284,8 @@ try {
                 ':member_id' => $memberId,
                 ':annual_fee' => json_encode($annualFees)
             ]);
+            
+            error_log("Update result: " . ($result ? "SUCCESS" : "FAILED"));
             
             echo json_encode(['success' => $result]);
             
@@ -280,7 +329,7 @@ try {
             // データベースを更新
             $sql = "UPDATE membership_fees SET 
                     annual_fee = :annual_fee,
-                    updated_at = NOW()
+                    updated_at = CURRENT_TIMESTAMP
                 WHERE member_id = :member_id";
             
             $stmt = $db->prepare($sql);

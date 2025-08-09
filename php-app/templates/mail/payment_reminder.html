@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会費お支払いのお願い</title>
+</head>
+<body style="font-family: 'メイリオ', Meiryo, sans-serif; line-height: 1.8; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #f39c12; padding-bottom: 10px;">会費お支払いのお願い</h2>
+        
+        <p>{{name}} 様</p>
+        
+        <p>いつもFOCJの活動にご協力いただき、誠にありがとうございます。</p>
+        
+        <p>{{payment_type}}のお支払い期限が近づいておりますので、<br>
+        お忙しいところ恐れ入りますが、お手続きをお願いいたします。</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #856404;">お支払い内容</h3>
+            <p style="margin: 5px 0;"><strong>会員番号：</strong>{{member_number}}</p>
+            <p style="margin: 5px 0;"><strong>お名前：</strong>{{name}} 様</p>
+            <p style="margin: 5px 0;"><strong>お支払い項目：</strong>{{payment_type}}</p>
+            <p style="margin: 5px 0;"><strong>金額：</strong>{{amount}}円</p>
+            <p style="margin: 5px 0;"><strong>お支払い期限：</strong>{{due_date}}</p>
+        </div>
+        
+        <h3 style="color: #2c3e50; margin-top: 30px;">お振込先</h3>
+        <div style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 20px 0;">
+            <p style="margin: 5px 0;">銀行名：○○銀行 ○○支店</p>
+            <p style="margin: 5px 0;">口座種別：普通</p>
+            <p style="margin: 5px 0;">口座番号：1234567</p>
+            <p style="margin: 5px 0;">口座名義：FOCJ</p>
+        </div>
+        
+        <h3 style="color: #2c3e50; margin-top: 30px;">ご注意事項</h3>
+        <ul style="line-height: 1.8;">
+            <li>お振込みの際は、会員番号とお名前を必ずご記入ください。</li>
+            <li>振込手数料はお客様負担となります。</li>
+            <li>領収書が必要な場合は、事務局までご連絡ください。</li>
+            <li>期限を過ぎてもお支払いが確認できない場合、会員資格に影響する場合があります。</li>
+        </ul>
+        
+        <p>既にお支払い済みの場合は、行き違いですのでご容赦ください。</p>
+        
+        <div style="background: #e8f4f8; border: 1px solid #3498db; padding: 15px; margin: 30px 0;">
+            <p style="margin: 0;"><strong>お問い合わせ先</strong><br>
+            FOCJ事務局<br>
+            Email: info@focj.jp<br>
+            TEL: 03-1234-5678（平日10:00〜18:00）</p>
+        </div>
+        
+        <p>今後ともFOCJをよろしくお願いいたします。</p>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        
+        <p style="font-size: 0.9em; color: #666;">
+            このメールは自動送信されています。<br>
+            ご不明な点がございましたら、上記お問い合わせ先までご連絡ください。
+        </p>
+    </div>
+</body>
+</html>

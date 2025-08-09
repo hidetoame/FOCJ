@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove-member-confirm
     // 退会処理を実行
     $sql = "UPDATE registrations SET 
             is_withdrawn = TRUE,
-            withdrawn_at = NOW(),
+            withdrawn_at = CURRENT_TIMESTAMP,
             withdrawn_by = :withdrawn_by,
             withdrawal_reason = :reason
             WHERE id = :id";
@@ -136,8 +136,12 @@ $html = preg_replace(
     $html, 1
 );
 
-// 会員番号（IDの下4桁）
-$memberNumber = substr('FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), -4);
+// 会員番号（データベースから取得）
+if ($member['member_number']) {
+    $memberNumber = 'FOCJ-' . str_pad($member['member_number'], 5, '0', STR_PAD_LEFT);
+} else {
+    $memberNumber = '未割当';
+}
 $html = str_replace('>2000</div>', '>' . h($memberNumber) . '</div>', $html);
 
 // 会員データを設定

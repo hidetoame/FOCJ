@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOCJ 入会申込フォーム</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>FOCJ 入会申込フォーム</h1>
+        
+        <form id="registrationForm" action="/registration/confirm.php" method="POST" enctype="multipart/form-data">
+            <div class="form-section">
+                <h2>基本情報</h2>
+                
+                <div class="form-group">
+                    <label>お名前（漢字）<span class="required">*</span></label>
+                    <div class="form-row">
+                        <input type="text" name="family_name" placeholder="姓" required>
+                        <input type="text" name="first_name" placeholder="名" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>お名前（かな）<span class="required">*</span></label>
+                    <div class="form-row">
+                        <input type="text" name="family_name_kana" placeholder="せい" required>
+                        <input type="text" name="first_name_kana" placeholder="めい" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>お名前（アルファベット）</label>
+                    <input type="text" name="name_alphabet" placeholder="YAMADA Taro">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>住所</h2>
+                
+                <div class="form-group">
+                    <label>郵便番号<span class="required">*</span></label>
+                    <input type="text" name="postal_code" placeholder="123-4567" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>都道府県<span class="required">*</span></label>
+                    <select name="prefecture" required>
+                        <option value="">選択してください</option>
+                        <option value="北海道">北海道</option>
+                        <option value="青森県">青森県</option>
+                        <option value="岩手県">岩手県</option>
+                        <option value="宮城県">宮城県</option>
+                        <option value="秋田県">秋田県</option>
+                        <option value="山形県">山形県</option>
+                        <option value="福島県">福島県</option>
+                        <option value="茨城県">茨城県</option>
+                        <option value="栃木県">栃木県</option>
+                        <option value="群馬県">群馬県</option>
+                        <option value="埼玉県">埼玉県</option>
+                        <option value="千葉県">千葉県</option>
+                        <option value="東京都">東京都</option>
+                        <option value="神奈川県">神奈川県</option>
+                        <option value="新潟県">新潟県</option>
+                        <option value="富山県">富山県</option>
+                        <option value="石川県">石川県</option>
+                        <option value="福井県">福井県</option>
+                        <option value="山梨県">山梨県</option>
+                        <option value="長野県">長野県</option>
+                        <option value="岐阜県">岐阜県</option>
+                        <option value="静岡県">静岡県</option>
+                        <option value="愛知県">愛知県</option>
+                        <option value="三重県">三重県</option>
+                        <option value="滋賀県">滋賀県</option>
+                        <option value="京都府">京都府</option>
+                        <option value="大阪府">大阪府</option>
+                        <option value="兵庫県">兵庫県</option>
+                        <option value="奈良県">奈良県</option>
+                        <option value="和歌山県">和歌山県</option>
+                        <option value="鳥取県">鳥取県</option>
+                        <option value="島根県">島根県</option>
+                        <option value="岡山県">岡山県</option>
+                        <option value="広島県">広島県</option>
+                        <option value="山口県">山口県</option>
+                        <option value="徳島県">徳島県</option>
+                        <option value="香川県">香川県</option>
+                        <option value="愛媛県">愛媛県</option>
+                        <option value="高知県">高知県</option>
+                        <option value="福岡県">福岡県</option>
+                        <option value="佐賀県">佐賀県</option>
+                        <option value="長崎県">長崎県</option>
+                        <option value="熊本県">熊本県</option>
+                        <option value="大分県">大分県</option>
+                        <option value="宮崎県">宮崎県</option>
+                        <option value="鹿児島県">鹿児島県</option>
+                        <option value="沖縄県">沖縄県</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>市区町村・番地<span class="required">*</span></label>
+                    <input type="text" name="city_address" placeholder="○○市○○町1-2-3" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>建物名・部屋番号</label>
+                    <input type="text" name="building_name" placeholder="○○マンション101号室">
+                </div>
+                
+                <div class="form-group">
+                    <label>住所種別<span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="address_type" value="home" checked> 自宅</label>
+                        <label><input type="radio" name="address_type" value="work"> 勤務先</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>連絡先</h2>
+                
+                <div class="form-group">
+                    <label>携帯電話番号<span class="required">*</span></label>
+                    <input type="tel" name="mobile_number" placeholder="090-1234-5678" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>固定電話番号</label>
+                    <input type="tel" name="phone_number" placeholder="03-1234-5678">
+                </div>
+                
+                <div class="form-group">
+                    <label>メールアドレス<span class="required">*</span></label>
+                    <input type="email" name="email" placeholder="example@email.com" required>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>個人情報</h2>
+                
+                <div class="form-group">
+                    <label>生年月日<span class="required">*</span></label>
+                    <input type="date" name="birth_date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>性別<span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gender" value="male" required> 男性</label>
+                        <label><input type="radio" name="gender" value="female" required> 女性</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>職業</label>
+                    <input type="text" name="occupation">
+                </div>
+                
+                <div class="form-group">
+                    <label>会社名</label>
+                    <input type="text" name="company_name">
+                </div>
+                
+                <div class="form-group">
+                    <label>自己紹介</label>
+                    <textarea name="self_introduction" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>スケジュール管理URL</label>
+                    <input type="url" name="schedule_url" placeholder="https://example.com/schedule">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>車両情報</h2>
+                
+                <div class="form-group">
+                    <label>車種<span class="required">*</span></label>
+                    <input type="text" name="car_model" placeholder="例：911 Carrera" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>年式<span class="required">*</span></label>
+                    <input type="text" name="model_year" placeholder="例：2023" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>色<span class="required">*</span></label>
+                    <input type="text" name="car_color" placeholder="例：ブラック" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>ナンバー<span class="required">*</span></label>
+                    <input type="text" name="car_number" placeholder="例：品川 330 あ 12-34" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>その他の車両</label>
+                    <textarea name="other_cars" rows="3" placeholder="複数台お持ちの場合はこちらに記入してください"></textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>ディーラー情報</h2>
+                
+                <div class="form-group">
+                    <label>お付き合いのあるディーラー</label>
+                    <input type="text" name="relationship_dealer">
+                </div>
+                
+                <div class="form-group">
+                    <label>担当営業</label>
+                    <input type="text" name="sales_person">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>紹介者情報</h2>
+                
+                <div class="form-group">
+                    <label>紹介者1</label>
+                    <input type="text" name="referrer1">
+                </div>
+                
+                <div class="form-group">
+                    <label>紹介ディーラー</label>
+                    <input type="text" name="referrer_dealer">
+                </div>
+                
+                <div class="form-group">
+                    <label>紹介者2</label>
+                    <input type="text" name="referrer2">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>その他</h2>
+                
+                <div class="form-group">
+                    <label>FOCJを知ったきっかけ</label>
+                    <select name="how_found">
+                        <option value="">選択してください</option>
+                        <option value="紹介">紹介</option>
+                        <option value="ディーラー">ディーラー</option>
+                        <option value="インターネット">インターネット</option>
+                        <option value="SNS">SNS</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="howFoundOther" style="display:none;">
+                    <label>その他の場合、詳細をご記入ください</label>
+                    <input type="text" name="how_found_other">
+                </div>
+                
+                <div class="form-group">
+                    <label>備考・コメント</label>
+                    <textarea name="comments" rows="4"></textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>添付ファイル</h2>
+                
+                <div class="form-group">
+                    <label>運転免許証（表面）<span class="required">*</span></label>
+                    <input type="file" name="license_image" accept="image/*,.pdf" required>
+                    <small>※ JPG, PNG, GIF, PDF形式（最大10MB）</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>車検証</label>
+                    <input type="file" name="vehicle_inspection_image" accept="image/*,.pdf">
+                    <small>※ JPG, PNG, GIF, PDF形式（最大10MB）</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>名刺</label>
+                    <input type="file" name="business_card_image" accept="image/*,.pdf">
+                    <small>※ JPG, PNG, GIF, PDF形式（最大10MB）</small>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">確認画面へ</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // FOCJを知ったきっかけの選択に応じて詳細入力欄を表示/非表示
+        document.querySelector('select[name="how_found"]').addEventListener('change', function() {
+            const otherField = document.getElementById('howFoundOther');
+            if (this.value === 'その他') {
+                otherField.style.display = 'block';
+            } else {
+                otherField.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

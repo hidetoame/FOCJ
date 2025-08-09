@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>FOCJ Membership Management</title>
+    <link rel="icon" href="assets/img/favicon.ico" />
+    <link rel="stylesheet" href="assets/lib/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="assets/lib/simplebar/simplebar.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="common">
+        <div class="header-inner">
+          <div class="header-logo"><img src="assets/img/logo_focj.svg" width="100" height="100" alt="" /></div>
+          <h1 class="header-title">
+            <span class="header-title-line">FOCJ Membership</span> <span class="header-title-line">Management</span>
+          </h1>
+          <div class="header-username icon icon-user icon--text">username01</div>
+          <div class="header-logout">
+            <form action="0_login.html" method="post"><button type="submit" class="button button--line">ログアウト</button></form>
+          </div>
+        </div>
+      </header>
+      <div class="contents admin">
+        <nav class="admin-menu" data-simplebar>
+          <ul class="admin-menu-list">
+            <li class="admin-menu-item">
+              <a href="A2_registration-list.html" class="admin-menu-link">会員希望申請一覧</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="B1_edit-mail-index.html" class="admin-menu-link">案内メール編集</a>
+            </li>
+            <li class="admin-menu-item">
+              <a href="C1_members-list.html" class="admin-menu-link --current">承認済み会員一覧</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="admin-main">
+          <div class="admin-inner">
+            <h2 class="admin-contents-title">変更内容の確認</h2>
+            <p class="admin-contents-message">以下の内容で会員情報を変更します。<br>内容を確認の上、「変更を反映」ボタンをクリックしてください。</p>
+
+            <form action="C4_edit-member-info-confirm.html" method="post">
+              <div class="member-detail-contents">
+                <div class="member-detail-block">
+                  <div class="form-contents">
+                    <h3>会員の情報</h3>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">
+                            会員番号
+                            <div class="form-require">必須</div>
+                          </div>
+                          <div class="form-item-confirm">2000</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">
+                        氏名
+                        <div class="form-require">必須</div>
+                      </div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-name">姓</div>
+                          <div class="form-item-confirm">山田</div>
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-name">名</div>
+                          <div class="form-item-confirm">太郎</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">氏名（フリガナ）<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-name">姓</div>
+                          <div class="form-item-confirm">ヤマダ</div>
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-name">名</div>
+                          <div class="form-item-confirm">タロウ</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">氏名（ローマ字表記）<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">TAROU YAMADA</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">ご連絡先住所<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <span class="p-country-name" style="display: none">Japan</span>
+                        <label class="form-item-label">
+                          <div class="form-item-name">郵便番号</div>
+                          <div class="form-item-confirm">160-0022</div>
+                        </label>
+                      </div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-name">都道府県</div>
+                          <div class="form-item-confirm">東京都</div>
+                        </label>
+                      </div>
+
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">市区町村・番地</div>
+                          <div class="form-item-confirm">東京都新宿区1-1-1</div>
+                        </label>
+                      </div>
+
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-name">建物名・部屋番号</div>
+                          <div class="form-item-confirm">〇〇〇〇ビル 23F</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">ご連絡先住所の種別<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">勤務先</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">携帯電話番号<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">090-1234-5678</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">電話番号</div>
+                          <div class="form-item-confirm">03-0000-0000</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">生年月日<div class="form-require">必須</div></div>
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-item-date">
+                            <div class="form-item-confirm">1975</div>
+                            <div class="form-item-name">年</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-date">
+                            <div class="form-item-confirm">1</div>
+                            <div class="form-item-name">月</div>
+                          </div>
+                        </label>
+                        <label class="form-item-label">
+                          <div class="form-item-date">
+                            <div class="form-item-confirm">1</div>
+                            <div class="form-item-name">日</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">メールアドレス<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">example@example.com</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-group-name">職業<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">〇〇株式会社 代表取締役<br>その他複数の会社経営</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-group-name">自己紹介<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト<br><br>自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト自己紹介テキスト</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">お付き合いのあるFerrariオフィシャルディーラー</div>
+                          <div class="form-item-confirm">コーンズ芝ショールーム</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">担当セールス名</div>
+                          <div class="form-item-confirm">-</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>イベントに参加するフェラーリの情報</h3>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">車種・Model名<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">○○○○</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">年式<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">○○○○</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">車体色<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">○○○○</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">登録No<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">○○○○</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>ご紹介者の情報</h3>
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">ご紹介者-1<div class="form-require">必須</div></div>
+                          <div class="form-item-confirm">〇〇〇〇さん</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">ご紹介者ディーラー名</div>
+                          <div class="form-item-confirm">-</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-item-line --short">
+                        <label class="form-item-label">
+                          <div class="form-group-name">ご紹介者-2（理事）</div>
+                          <div class="form-item-confirm">-</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h3>添付書類</h3>
+
+                    <div class="form-group">
+                      <div class="form-group-name">運転免許証</div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">変更なし</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">車検証</div>
+
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm"><img src="assets/img/dummy_vehicle-inspection.png" width="480" height="288" alt=""></div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-group-name">名刺</div>
+                      <div class="form-item-line">
+                        <label class="form-item-label">
+                          <div class="form-item-confirm">変更なし</div>
+                        </label>
+                      </div>
+                    </div>
+                    <hr />
+                  </div>
+                </div>
+
+                <div class="member-detail-block --sidebar">
+                  <div class="member-detail-control button-area">
+                    <div class="member-detail-control-item">
+                      <a href="C5_edit-member-info-complete.html" class="button button--primary">変更を反映</a>
+                    </div>
+                    <div class="member-detail-control-item">
+                      <a href="C3_edit-member-info.html" class="button button--line">戻る</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

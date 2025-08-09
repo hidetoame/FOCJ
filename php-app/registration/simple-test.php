@@ -1,37 +1,70 @@
 <?php
-require_once '../config/config.php';
+require_once '../config/database.php';
 
-// セッションにテストデータを設定
-$_SESSION['form_data'] = [
-    'familyname' => 'テスト',
-    'firstname' => '太郎',
-    'familyname-kana' => 'テスト',
-    'firstname-kana' => 'タロウ',
-    'name-alphabet' => 'TEST TARO',
-    'mail-address' => 'test@example.com',
-    'postal-code' => '100-0001',
-    'prefecture' => '東京都',
-    'city-address' => '千代田区',
-    'mobile-number' => '090-1234-5678',
-    'phone-number' => '03-1234-5678',
-    'birth-year' => '1990',
-    'birth-month' => '1',
-    'birth-day' => '1',
-    'occupation' => 'テスト職業',
-    'car-model' => 'テストモデル',
-    'car-year' => '2020',
-];
-$_SESSION['csrf_token'] = md5(time());
-
-echo "<h2>Simple Complete Test</h2>";
-echo "<p>Session data has been set.</p>";
-echo "<p>CSRF Token: " . $_SESSION['csrf_token'] . "</p>";
-
+// テスト用のシンプルなフォーム
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 ?>
-<form action="complete.php" method="POST">
-    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-    <button type="submit">Complete.phpへ送信</button>
-</form>
-
-<h3>現在のセッションデータ:</h3>
-<pre><?php print_r($_SESSION); ?></pre>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>シンプル登録テスト</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>シンプル登録テスト</h1>
+    <form method="POST">
+        <p>姓: <input type="text" name="family_name" value="テスト" required></p>
+        <p>名: <input type="text" name="first_name" value="太郎" required></p>
+        <p>住所タイプ: 
+            <label><input type="radio" name="address_type" value="home" checked> 自宅</label>
+            <label><input type="radio" name="address_type" value="work"> 勤務先</label>
+        </p>
+        <p>メール: <input type="email" name="email" value="test@example.com" required></p>
+        <button type="submit">登録</button>
+    </form>
+</body>
+</html>
+<?php
+} else {
+    // POSTデータを処理
+    echo "<h2>POSTデータ:</h2>";
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
+    
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        // 最小限のデータで登録
+        $sql = "INSERT INTO registrations (
+            family_name, first_name, address_type, email
+        ) VALUES (
+            :family_name, :first_name, :address_type, :email
+        )";
+        
+        $stmt = $db->prepare($sql);
+        $params = [
+            ':family_name' => $_POST['family_name'],
+            ':first_name' => $_POST['first_name'],
+            ':address_type' => $_POST['address_type'],
+            ':email' => $_POST['email']
+        ];
+        
+        echo "<h2>SQLパラメータ:</h2>";
+        echo "<pre>";
+        print_r($params);
+        echo "</pre>";
+        
+        $stmt->execute($params);
+        
+        echo "<h2>✅ 登録成功!</h2>";
+        echo "ID: " . $db->lastInsertId();
+        
+    } catch (PDOException $e) {
+        echo "<h2>❌ エラー:</h2>";
+        echo "<pre>" . $e->getMessage() . "</pre>";
+        echo "<h2>トレース:</h2>";
+        echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    }
+}
+?>

@@ -21,11 +21,24 @@ if (!validateCsrfToken($_POST['csrf_token'] ?? '')) {
     // exit;
 }
 
-// セッションからフォームデータ取得
-$formData = getFormData();
+// フォームデータ取得 - POSTデータを優先、なければセッションから
+if (!empty($_POST) && count($_POST) > 1) {  // csrf_token以外のデータがある場合
+    $formData = $_POST;
+    unset($formData['csrf_token']);
+    error_log("Using POST data");
+} else {
+    $formData = getFormData();
+    error_log("Using session data");
+}
+
+// デバッグ：セッション情報を出力
+error_log("Session ID in complete.php: " . session_id());
+error_log("POST data: " . print_r($_POST, true));
+error_log("Form data: " . print_r($formData, true));
+
 if (empty($formData)) {
     // デバッグ用：セッション情報を表示
-    die('Error: Form data is empty!<br>Session:<pre>' . print_r($_SESSION, true) . '</pre>');
+    die('Error: Form data is empty!<br>Session ID: ' . session_id() . '<br>POST:<pre>' . print_r($_POST, true) . '</pre><br>Session:<pre>' . print_r($_SESSION, true) . '</pre>');
     // 本番環境では以下を使用
     // header('Location: form.php');
     // exit;
@@ -74,6 +87,19 @@ try {
         );
     }
 
+    // デバッグ: address-typeの値を確認
+    error_log("address-type value: " . ($formData['address-type'] ?? 'NOT SET'));
+    
+    // address-typeの値を正規化（自宅/勤務先 -> home/work）
+    if (isset($formData['address-type'])) {
+        if ($formData['address-type'] === '自宅') {
+            $formData['address-type'] = 'home';
+        } elseif ($formData['address-type'] === '勤務先') {
+            $formData['address-type'] = 'work';
+        }
+        error_log("Normalized address-type value: " . $formData['address-type']);
+    }
+    
     // パラメータバインド
     $params = [
         ':family_name' => $formData['familyname'] ?? '',
@@ -85,16 +111,16 @@ try {
         ':prefecture' => $formData['prefecture'] ?? '',
         ':city_address' => $formData['city-address'] ?? '',
         ':building_name' => $formData['building-name'] ?? '',
-        ':address_type' => $formData['address-type'] ?? '',
+        ':address_type' => !empty($formData['address-type']) ? $formData['address-type'] : 'home',
         ':phone_number' => $formData['phone-number'] ?? '',
         ':mobile_number' => $formData['mobile-number'] ?? '',
         ':email' => $formData['mail-address'] ?? '',
         ':birth_date' => $birthDate,
-        ':gender' => $formData['gender'] ?? '',
+        ':gender' => null,  // フォームにgenderフィールドなし
         ':occupation' => $formData['occupation'] ?? '',
         ':company_name' => $formData['company-name'] ?? '',
         ':car_model' => $formData['car-model'] ?? '',
-        ':model_year' => !empty($formData['car-year']) ? intval($formData['car-year']) : null,
+        ':model_year' => $formData['car-year'] ?? '',
         ':car_color' => $formData['car-color'] ?? '',
         ':car_number' => $formData['car-number'] ?? '',
         ':relationship_dealer' => $formData['relationship-dealer'] ?? '',

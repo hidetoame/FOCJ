@@ -79,9 +79,16 @@ $html = file_get_contents(TEMPLATE_PATH . '/registration-form/registration-form-
 $html = str_replace('href="assets/', 'href="/templates/registration-form/assets/', $html);
 $html = str_replace('src="assets/', 'src="/templates/registration-form/assets/', $html);
 
-// フォームのaction属性を変更し、CSRFトークンを追加
-// 一度の置換で両方を処理
+// フォームのaction属性を変更し、CSRFトークンとすべてのフォームデータをhiddenフィールドとして追加
 $hiddenFields = "\n" . '<input type="hidden" name="csrf_token" value="' . $csrf_token . '">';
+
+// すべてのフォームデータをhiddenフィールドとして追加
+foreach ($formData as $key => $value) {
+    if (!is_array($value)) {
+        $hiddenFields .= "\n" . '<input type="hidden" name="' . h($key) . '" value="' . h($value) . '">';
+    }
+}
+
 $html = str_replace(
     '<form action="registration-form-thanks.html" id="registration-form" class="h-adr" method="post" enctype="multipart/form-data">',
     '<form action="complete.php" id="registration-form" class="h-adr" method="post" enctype="multipart/form-data">' . $hiddenFields,
@@ -102,7 +109,7 @@ $html = preg_replace('/<div class="form-item-confirm">TAROU TANAKA<\/div>/', '<d
 
 // 住所タイプ
 $addressType = isset($formData['address-type']) ? 
-    ($formData['address-type'] === 'address-home' ? '自宅' : '勤務先') : '自宅';
+    ($formData['address-type'] === 'home' ? '自宅' : '勤務先') : '自宅';
 $html = preg_replace('/<div class="form-item-confirm">勤務先<\/div>/', '<div class="form-item-confirm">' . $addressType . '</div>', $html);
 
 // 郵便番号

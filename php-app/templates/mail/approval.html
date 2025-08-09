@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入会承認のお知らせ</title>
+</head>
+<body style="font-family: 'メイリオ', Meiryo, sans-serif; line-height: 1.8; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">FOCJ 入会承認のお知らせ</h2>
+        
+        <p>{{name}} 様</p>
+        
+        <p>この度は、FOCJへの入会申込みをいただき、誠にありがとうございます。</p>
+        
+        <p>お申込みいただいた内容を確認させていただきましたところ、<br>
+        入会を承認させていただくこととなりましたので、ご連絡申し上げます。</p>
+        
+        <div style="background: #f8f9fa; border-left: 4px solid #3498db; padding: 15px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #2c3e50;">会員情報</h3>
+            <p style="margin: 5px 0;"><strong>会員番号：</strong>{{member_number}}</p>
+            <p style="margin: 5px 0;"><strong>お名前：</strong>{{name}} 様</p>
+            <p style="margin: 5px 0;"><strong>承認日：</strong>{{approval_date}}</p>
+        </div>
+        
+        <h3 style="color: #2c3e50; margin-top: 30px;">今後のお手続きについて</h3>
+        
+        <ol style="line-height: 2;">
+            <li><strong>入会金・年会費のお支払い</strong><br>
+                下記の口座へ、入会金および年会費をお振込みください。
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin: 10px 0;">
+                    <p style="margin: 5px 0;">振込先：○○銀行 ○○支店</p>
+                    <p style="margin: 5px 0;">口座番号：普通 1234567</p>
+                    <p style="margin: 5px 0;">口座名義：FOCJ</p>
+                    <p style="margin: 5px 0;"><strong>振込金額：{{total_amount}}円</strong></p>
+                    <p style="margin: 5px 0; font-size: 0.9em;">（内訳：入会金 {{entry_fee}}円 + 年会費 {{annual_fee}}円）</p>
+                </div>
+            </li>
+            
+            <li><strong>会員証の送付</strong><br>
+                ご入金確認後、会員証を送付させていただきます。
+            </li>
+            
+            <li><strong>メンバー専用サイトへのアクセス</strong><br>
+                会員証と共に、メンバー専用サイトへのログイン情報をお送りします。
+            </li>
+        </ol>
+        
+        <h3 style="color: #2c3e50; margin-top: 30px;">ご注意事項</h3>
+        <ul style="line-height: 1.8;">
+            <li>お振込みの際は、会員番号とお名前を必ずご記入ください。</li>
+            <li>振込手数料はお客様負担となります。</li>
+            <li>ご入金確認まで2〜3営業日かかる場合があります。</li>
+        </ul>
+        
+        <div style="background: #e8f4f8; border: 1px solid #3498db; padding: 15px; margin: 30px 0;">
+            <p style="margin: 0;"><strong>お問い合わせ先</strong><br>
+            FOCJ事務局<br>
+            Email: info@focj.jp<br>
+            TEL: 03-1234-5678（平日10:00〜18:00）</p>
+        </div>
+        
+        <p>今後ともFOCJをよろしくお願いいたします。</p>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        
+        <p style="font-size: 0.9em; color: #666;">
+            このメールは自動送信されています。<br>
+            ご不明な点がございましたら、上記お問い合わせ先までご連絡ください。
+        </p>
+    </div>
+</body>
+</html>

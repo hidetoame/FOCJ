@@ -47,6 +47,7 @@ if (!$template) {
     // テンプレート変数を置換してプレビュー生成
     $mailContent = $template['body'];
     $mailContent = str_replace('{{name}}', $registration['family_name'] . ' ' . $registration['first_name'], $mailContent);
+    $mailContent = str_replace('{NAME}', $registration['family_name'] . ' ' . $registration['first_name'], $mailContent);
     $mailContent = str_replace('{{email}}', $registration['email'], $mailContent);
     $mailContent = str_replace('{{member_number}}', 'FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), $mailContent);
     $templateName = $template['template_name'];
@@ -175,7 +176,7 @@ $licenseImage = $registration['license_image'] ?: $registration['drivers_license
 if ($licenseImage) {
     $licenseHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($licenseImage) . '" width="640" height="427" alt="">';
 } else {
-    $licenseHtml = '-';
+    $licenseHtml = '<span style="color: #999;">画像なし</span>';
 }
 $html = preg_replace(
     '/<div class="registration-detail-name">運転免許証<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
@@ -189,7 +190,7 @@ $vehicleImage = $registration['vehicle_inspection_image'] ?: $registration['vehi
 if ($vehicleImage) {
     $vehicleHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($vehicleImage) . '" width="480" height="288" alt="">';
 } else {
-    $vehicleHtml = '-';
+    $vehicleHtml = '<span style="color: #999;">画像なし</span>';
 }
 $html = preg_replace(
     '/<div class="registration-detail-name">車検証<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
@@ -201,12 +202,12 @@ $html = preg_replace(
 // 名刺
 $businessCardImage = $registration['business_card_image'] ?: $registration['business_card_file'];
 if ($businessCardImage) {
-    $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" width="400" height="250" alt="">';
+    $businessCardHtml = '<img src="view-user-image.php?user_id=' . $id . '&file=' . h($businessCardImage) . '" width="640" height="427" alt="">';
 } else {
-    $businessCardHtml = '-';
+    $businessCardHtml = '<span style="color: #999;">画像なし</span>';
 }
 $html = preg_replace(
-    '/<div class="registration-detail-name">名刺<\/div>\s*<div class="registration-detail-value">-<\/div>/',
+    '/<div class="registration-detail-name">名刺<\/div>\s*<div class="registration-detail-value">.*?<\/div>/',
     '<div class="registration-detail-name">名刺</div>
                   <div class="registration-detail-value">' . $businessCardHtml . '</div>',
     $html

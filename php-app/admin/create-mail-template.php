@@ -20,23 +20,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $templateName = $_POST['template_name'] ?? '';
     $templateContent = $_POST['template_content'] ?? '';
     
-    // データベースに新規登録
-    $typeMap = ['approve' => '承認通知', 'reject' => '却下通知'];
-    $dbType = $typeMap[$type] ?? '承認通知';
-    $sql = "INSERT INTO mail_templates (template_name, template_type, subject, body, is_active) VALUES (:name, :type, :subject, :content, false)";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([
-        ':name' => $templateName,
-        ':type' => $dbType,
-        ':subject' => $templateName, // 仮の件名
-        ':content' => $templateContent
-    ]);
+    // 入力チェック
+    if (empty($templateName) || empty($templateContent)) {
+        die("エラー: 入力データが不足しています。");
+    }
     
-    $_SESSION['last_template_name'] = $templateName;
-    
-    // 完了ページへリダイレクト
-    header('Location: create-mail-template-complete.php?type=' . $type);
-    exit;
+    try {
+        // データベースに新規登録
+        $typeMap = ['approve' => '承認通知', 'reject' => '却下通知'];
+        $dbType = $typeMap[$type] ?? '承認通知';
+        
+        // 同じタイプのテンプレートが既に存在するかチェック
+        $checkSql = "SELECT COUNT(*) as count FROM mail_templates WHERE template_type = :type";
+        $checkStmt = $db->prepare($checkSql);
+        $checkStmt->execute([':type' => $dbType]);
+        $existingCount = $checkStmt->fetch()['count'];
+        
+        // 初めての登録の場合は使用フラグをONにする
+        $isActive = ($existingCount == 0) ? 1 : 0;
+        
+        // 初めての登録で使用フラグをONにする場合、他の同じタイプのテンプレートの使用フラグをOFFにする
+        if ($isActive == 1) {
+            $updateSql = "UPDATE mail_templates SET is_active = 0 WHERE template_type = :type";
+            $updateStmt = $db->prepare($updateSql);
+            $updateStmt->execute([':type' => $dbType]);
+        }
+        
+        $sql = "INSERT INTO mail_templates (template_name, template_type, subject, body, is_active) VALUES (:name, :type, :subject, :body, :is_active)";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':name' => $templateName,
+            ':type' => $dbType,
+            ':subject' => $templateName, // 仮の件名としてテンプレート名を使用
+            ':body' => $templateContent,
+            ':is_active' => $isActive
+        ]);
+        
+        $_SESSION['last_template_name'] = $templateName;
+        
+        // 完了ページへリダイレクト
+        header('Location: create-mail-template-complete.php?type=' . $type);
+        exit;
+    } catch (PDOException $e) {
+        // エラー処理
+        error_log("Database error in create-mail-template.php: " . $e->getMessage());
+        die("データベースエラーが発生しました: " . $e->getMessage());
+    }
 }
 
 // テンプレート読み込み

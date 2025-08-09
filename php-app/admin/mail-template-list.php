@@ -16,25 +16,53 @@ $db = Database::getInstance()->getConnection();
 $type = $_GET['type'] ?? 'approve';
 $typeText = $type === 'approve' ? '承認用メール' : '非承認用メール';
 
-// POSTリクエスト処理（テンプレート選択）
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_template'])) {
-    $selectedId = intval($_POST['selected_template']);
+// POSTリクエスト処理（テンプレート選択または削除）
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $typeMap = ['approve' => '承認通知', 'reject' => '却下通知'];
     $dbType = $typeMap[$type] ?? '承認通知';
     
-    // まず全てのis_activeをfalseにする
-    $sql = "UPDATE mail_templates SET is_active = false WHERE template_type = :type";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([':type' => $dbType]);
-    
-    // 選択したテンプレートをアクティブにする
-    $sql = "UPDATE mail_templates SET is_active = true WHERE template_id = :id AND template_type = :type";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([':id' => $selectedId, ':type' => $dbType]);
-    
-    // リダイレクト
-    header('Location: mail-template-list.php?type=' . $type . '&updated=1');
-    exit;
+    if (isset($_POST['selected_template'])) {
+        // テンプレート選択処理
+        $selectedId = intval($_POST['selected_template']);
+        
+        // まず全てのis_activeをfalseにする
+        $sql = "UPDATE mail_templates SET is_active = false WHERE template_type = :type";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':type' => $dbType]);
+        
+        // 選択したテンプレートをアクティブにする
+        $sql = "UPDATE mail_templates SET is_active = true WHERE template_id = :id AND template_type = :type";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $selectedId, ':type' => $dbType]);
+        
+        // リダイレクト
+        header('Location: mail-template-list.php?type=' . $type . '&updated=1');
+        exit;
+    } elseif (isset($_POST['delete_template'])) {
+        // テンプレート削除処理
+        $deleteId = intval($_POST['delete_template']);
+        
+        // 削除対象が使用中かチェック
+        $sql = "SELECT is_active FROM mail_templates WHERE template_id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $deleteId]);
+        $template = $stmt->fetch();
+        
+        if ($template && $template['is_active']) {
+            // 使用中の場合はエラー
+            header('Location: mail-template-list.php?type=' . $type . '&error=active');
+            exit;
+        }
+        
+        // テンプレートを削除
+        $sql = "DELETE FROM mail_templates WHERE template_id = :id AND template_type = :type";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $deleteId, ':type' => $dbType]);
+        
+        // リダイレクト
+        header('Location: mail-template-list.php?type=' . $type . '&deleted=1');
+        exit;
+    }
 }
 
 // テンプレート読み込み
@@ -70,15 +98,19 @@ $stmt = $db->prepare($sql);
 $stmt->execute([':type' => $dbType]);
 $templates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 更新メッセージ
+// メッセージ表示
 $updateMessage = '';
 if (isset($_GET['updated'])) {
     $updateMessage = '<div style="background: #e7f5e1; color: #2e7d32; padding: 10px; margin-bottom: 20px; border-radius: 5px;">テンプレートの選択を更新しました。</div>';
+} elseif (isset($_GET['deleted'])) {
+    $updateMessage = '<div style="background: #e7f5e1; color: #2e7d32; padding: 10px; margin-bottom: 20px; border-radius: 5px;">テンプレートを削除しました。</div>';
+} elseif (isset($_GET['error']) && $_GET['error'] === 'active') {
+    $updateMessage = '<div style="background: #ffebee; color: #c62828; padding: 10px; margin-bottom: 20px; border-radius: 5px;">使用中のテンプレートは削除できません。別のテンプレートを選択してから削除してください。</div>';
 }
 
 // フォーム開始とテーブルヘッダーを修正
 $tableHtml = $updateMessage . '
-<form method="POST" action="mail-template-list.php?type=' . $type . '">
+<form method="POST" action="mail-template-list.php?type=' . $type . '" id="templateForm">
 <div class="table-list-contents" data-simplebar>
     <table>
         <thead>
@@ -87,6 +119,7 @@ $tableHtml = $updateMessage . '
                 <th class="--wide">テンプレート名</th>
                 <th class="--medium-slim">最終更新日</th>
                 <th class="--slim">編集</th>
+                <th class="--slim">削除</th>
             </tr>
         </thead>
         <tbody>';
@@ -96,6 +129,7 @@ foreach ($templates as $template) {
     $updatedDate = date('Y/n/j', strtotime($template['updated_at']));
     $checked = $template['is_active'] ? 'checked' : '';
     $activeLabel = $template['is_active'] ? ' <span style="color: green; font-weight: bold;">[使用中]</span>' : '';
+    $deleteButtonDisabled = $template['is_active'] ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '';
     
     $tableHtml .= '
         <tr>
@@ -105,6 +139,14 @@ foreach ($templates as $template) {
             <td>' . htmlspecialchars($template['template_name']) . $activeLabel . '</td>
             <td>' . $updatedDate . '</td>
             <td><a href="edit-mail-template.php?type=' . $type . '&id=' . $template['template_id'] . '" class="button button--line button--small">編集</a></td>
+            <td>
+                <form method="POST" action="mail-template-list.php?type=' . $type . '" style="display: inline;" onsubmit="return confirm(\'テンプレート「' . htmlspecialchars($template['template_name'], ENT_QUOTES) . '」を削除してもよろしいですか？\\n\\nこの操作は取り消せません。\');">
+                    <input type="hidden" name="delete_template" value="' . $template['template_id'] . '">
+                    <button type="submit" 
+                            class="button button--line button--small" 
+                            ' . $deleteButtonDisabled . '>削除</button>
+                </form>
+            </td>
         </tr>';
 }
 
@@ -116,5 +158,8 @@ $tableHtml .= '
 
 // テーブル部分を置換
 $html = preg_replace('/<div class="table-list-contents".*?<\/div>\s*<\/div>/s', $tableHtml . '</div>', $html);
+
+// JavaScriptは不要になったのでコメントアウト
+// $html = str_replace('</body>', '', $html);
 
 echo $html;

@@ -105,9 +105,20 @@ if ($businessCardImage) {
     );
 }
 
-// 会員番号（IDの下4桁）
-$memberNumber = substr('FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), -4);
+// 会員番号（データベースから取得）
+if ($member['member_number']) {
+    $memberNumber = $member['member_number'];  // 数字のみ
+} else {
+    $memberNumber = '';
+}
 $html = str_replace('value="2000"', 'value="' . h($memberNumber) . '"', $html);
+
+// フォームのラベルにFOCJ-を追加表示（入力欄の前に）
+$html = str_replace(
+    '<label for="member-number">会員番号</label>',
+    '<label for="member-number">会員番号 <span style="color: #666; font-size: 0.9em;">(FOCJ-)</span></label>',
+    $html
+);
 
 // 会員データを入力フィールドに設定
 // 氏名

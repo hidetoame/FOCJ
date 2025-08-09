@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入会審査結果のお知らせ</title>
+</head>
+<body style="font-family: 'メイリオ', Meiryo, sans-serif; line-height: 1.8; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">FOCJ 入会審査結果のお知らせ</h2>
+        
+        <p>{{name}} 様</p>
+        
+        <p>この度は、FOCJへの入会申込みをいただき、誠にありがとうございます。</p>
+        
+        <p>お申込みいただいた内容を慎重に審査させていただきましたが、<br>
+        誠に残念ながら、今回はご入会を見送らせていただくこととなりました。</p>
+        
+        <div style="background: #f8f9fa; border-left: 4px solid #e74c3c; padding: 15px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>審査日：</strong>{{rejection_date}}</p>
+            {{#rejection_reason}}
+            <p style="margin: 5px 0;"><strong>理由：</strong>{{rejection_reason}}</p>
+            {{/rejection_reason}}
+        </div>
+        
+        <p>なお、審査内容の詳細についてはお答えできかねますので、<br>
+        何卒ご了承くださいますようお願い申し上げます。</p>
+        
+        <p>今後、状況が変わりましたら、改めてお申込みいただくことも可能です。<br>
+        その際は、新たに審査させていただきます。</p>
+        
+        <div style="background: #e8f4f8; border: 1px solid #3498db; padding: 15px; margin: 30px 0;">
+            <p style="margin: 0;"><strong>お問い合わせ先</strong><br>
+            FOCJ事務局<br>
+            Email: info@focj.jp<br>
+            TEL: 03-1234-5678（平日10:00〜18:00）</p>
+        </div>
+        
+        <p>この度はお申込みいただき、ありがとうございました。</p>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        
+        <p style="font-size: 0.9em; color: #666;">
+            このメールは自動送信されています。<br>
+            ご不明な点がございましたら、上記お問い合わせ先までご連絡ください。
+        </p>
+    </div>
+</body>
+</html>

@@ -32,6 +32,7 @@ if (!$id || empty($postData)) {
 $db = Database::getInstance()->getConnection();
 
 $sql = "UPDATE registrations SET 
+        member_number = :member_number,
         family_name = :family_name,
         first_name = :first_name,
         family_name_kana = :family_name_kana,
@@ -73,8 +74,22 @@ if (!empty($postData['birth-year']) && !empty($postData['birth-month']) && !empt
     );
 }
 
+// 会員番号を数値に変換（空の場合はNULL）
+$memberNumber = !empty($postData['member-num']) ? intval($postData['member-num']) : null;
+
+// address-typeのデバッグ
+error_log("address-type value: " . ($postData['address-type'] ?? 'NOT SET'));
+error_log("postData: " . print_r($postData, true));
+
+// address-typeの値を検証
+$addressType = $postData['address-type'] ?? 'home';
+if (!in_array($addressType, ['home', 'work'])) {
+    $addressType = 'home';  // デフォルトをhomeに
+}
+
 $params = [
     ':id' => $id,
+    ':member_number' => $memberNumber,
     ':family_name' => $postData['familyname'] ?? '',
     ':first_name' => $postData['firstname'] ?? '',
     ':family_name_kana' => $postData['familyname-kana'] ?? '',
@@ -84,7 +99,7 @@ $params = [
     ':prefecture' => $postData['prefecture'] ?? '',
     ':city_address' => $postData['city-address'] ?? '',
     ':building_name' => $postData['building-name'] ?? '',
-    ':address_type' => $postData['address-type'] ?? 'home',
+    ':address_type' => $addressType,
     ':mobile_number' => $postData['mobile-number'] ?? '',
     ':phone_number' => $postData['phone-number'] ?? '',
     ':email' => $postData['mail-address'] ?? '',
@@ -198,8 +213,17 @@ $html = str_replace('href="C1_members-list.html"', 'href="members-list.php"', $h
 // 会員詳細へのリンクを調整
 $html = str_replace('href="C2_member-detail.html"', 'href="member-detail.php?id=' . $id . '"', $html);
 
-// 会員番号を表示
-$memberNumber = substr('FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), -4);
-$html = str_replace('会員番号：2000', '会員番号：' . h($memberNumber), $html);
+// 会員番号を表示（更新後の値を取得）
+$sql = "SELECT member_number FROM registrations WHERE id = :id";
+$stmt = $db->prepare($sql);
+$stmt->execute([':id' => $id]);
+$updatedMember = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($updatedMember['member_number']) {
+    $displayNumber = 'FOCJ-' . str_pad($updatedMember['member_number'], 5, '0', STR_PAD_LEFT);
+} else {
+    $displayNumber = '未割当';
+}
+$html = str_replace('会員番号：2000', '会員番号：' . h($displayNumber), $html);
 
 echo $html;

@@ -108,15 +108,24 @@ $html = str_replace('href="A2_registration-list.html"', 'href="registration-list
 $html = str_replace('href="B1_edit-mail-index.html"', 'href="edit-mail.php"', $html);
 $html = str_replace('href="C1_members-list.html"', 'href="members-list.php"', $html);
 
+// 会員番号（POSTデータから取得）- HTMLのname属性は"member-num"
+$memberNumber = $_POST['member-num'] ?? $member['member_number'] ?? '';
+
 // フォームのアクションを調整し、hidden fieldを追加（C4をedit-member-info-complete.phpに変更）
 $html = str_replace('action="C4_edit-member-info-confirm.html"', 'action="edit-member-info-complete.php"', $html);
-// フォーム内にhidden IDフィールドを追加（フォームタグの直後に挿入）
+// フォーム内にhiddenフィールドを追加（フォームタグの直後に挿入）
 $html = str_replace('<form', '<form', $html);
-$html = preg_replace('/(<form[^>]*>)/', '$1<input type="hidden" name="confirm" value="1">', $html, 1);
+$hiddenFields = '<input type="hidden" name="confirm" value="1">';
+$hiddenFields .= '<input type="hidden" name="member-num" value="' . h($memberNumber) . '">';
+$html = preg_replace('/(<form[^>]*>)/', '$1' . $hiddenFields, $html, 1);
 
-// 会員番号（IDの下4桁）
-$memberNumber = substr('FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), -4);
-$html = str_replace('<div class="form-item-confirm">2000</div>', '<div class="form-item-confirm">' . h($memberNumber) . '</div>', $html);
+// 会員番号の表示
+if ($memberNumber) {
+    $displayNumber = 'FOCJ-' . str_pad($memberNumber, 5, '0', STR_PAD_LEFT);
+} else {
+    $displayNumber = '未割当';
+}
+$html = str_replace('<div class="form-item-confirm">2000</div>', '<div class="form-item-confirm">' . h($displayNumber) . '</div>', $html);
 
 // POSTデータから各フィールドの値を設定
 // 氏名（姓・名）

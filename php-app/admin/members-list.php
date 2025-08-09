@@ -38,7 +38,7 @@ $sql = "SELECT
         mobile_number,
         email,
         approved_at,
-        'FOCJ-' || LPAD(id::text, 5, '0') as member_number,
+        member_number,
         FALSE as admission_fee_paid,  -- 入会金支払い（今後実装）
         FALSE as annual_fee_paid       -- 年会費支払い（今後実装）
     FROM registrations 
@@ -101,8 +101,12 @@ foreach ($members as $member) {
     // 承認日
     $approvedDate = $member['approved_at'] ? date('Y/n/j', strtotime($member['approved_at'])) : '-';
     
-    // 会員番号（IDの下4桁を表示）
-    $memberNumber = substr($member['member_number'], -4);
+    // 会員番号の表示
+    if ($member['member_number']) {
+        $memberNumber = 'FOCJ-' . str_pad($member['member_number'], 5, '0', STR_PAD_LEFT);
+    } else {
+        $memberNumber = '未割当';
+    }
     
     // 氏名
     $fullName = h($member['family_name'] . ' ' . $member['first_name']);
@@ -444,7 +448,7 @@ function showEntryFeeForm(data) {
                     <h4>入会金情報</h4>
                     <div class="form-group">
                         <label>金額:</label>
-                        <input type="number" id="entryFeeAmount" value="${entryFeeAmount}" style="background-color: #3a3a3a; color: white; border: 1px solid #555;">
+                        <input type="number" id="entryFeeAmount" value="${entryFeeAmount}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; cursor: text;" min="0">
                     </div>
                     <div class="form-group">
                         <label>ステータス:</label>
@@ -492,36 +496,41 @@ function showAnnualFeeForm(data) {
     
     console.log("Member annual fees from DB:", memberAnnualFees);
     
-    // マスター設定から年会費情報を取得
-    fetch("api/manage-fees.php?action=getMaster")
-        .then(response => response.json())
-        .then(masterData => {
-            const masterAnnualFees = masterData.annual_fees || [];
-            
-            console.log("Master annual fees:", masterAnnualFees);
-            
-            // マスターの年度情報と会員の支払い情報をマージ
-            const mergedFees = masterAnnualFees.map(masterFee => {
-                const memberFee = memberAnnualFees.find(f => f.year === masterFee.year);
-                // 会員の金額があればそれを使用、なければマスターの金額を使用
-                return {
-                    year: masterFee.year,
-                    amount: memberFee && memberFee.amount ? parseInt(memberFee.amount) : parseInt(masterFee.amount),
-                    status: memberFee ? memberFee.status : "未払い",
-                    payment_date: memberFee ? memberFee.payment_date : "",
-                    payment_method: memberFee ? memberFee.payment_method : "",
-                    payment_deadline: memberFee ? memberFee.payment_deadline : "",
-                    notes: memberFee ? memberFee.notes : ""
-                };
-            });
-            
-            console.log("Merged fees:", mergedFees);
-            
-            // 年度順にソート（新しい年を上に）
-            mergedFees.sort((a, b) => b.year - a.year);
-            
-            // 年会費フォームHTML
-            let formHtml = `
+    // 会員のデータをそのまま使用（マスターとマージしない）
+    let annualFeesData = memberAnnualFees;
+    
+    // データがない場合、現在年度と翌年度のデフォルトデータを作成
+    if (annualFeesData.length === 0) {
+        const currentYear = new Date().getFullYear();
+        annualFeesData = [
+            {
+                year: currentYear,
+                amount: 50000,
+                status: "未払い",
+                payment_date: "",
+                payment_method: "",
+                payment_deadline: "",
+                notes: ""
+            },
+            {
+                year: currentYear + 1,
+                amount: 50000,
+                status: "未払い",
+                payment_date: "",
+                payment_method: "",
+                payment_deadline: "",
+                notes: ""
+            }
+        ];
+    }
+    
+    console.log("Annual fees to display:", annualFeesData);
+    
+    // 年度順にソート（新しい年を上に）
+    annualFeesData.sort((a, b) => b.year - a.year);
+    
+    // 年会費フォームHTML
+    let formHtml = `
                 <div class="fee-form" style="max-height: 600px; overflow-y: auto;">
                     <h4>会員情報</h4>
                     <div class="form-group">
@@ -549,10 +558,10 @@ function showAnnualFeeForm(data) {
                                 </tr>
                             </thead>
                             <tbody>
-            `;
-            
-            // 各年度の行
-            mergedFees.forEach((fee, index) => {
+    `;
+    
+    // 各年度の行
+    annualFeesData.forEach((fee, index) => {
                 const paymentDeadline = fee.payment_deadline ? fee.payment_deadline.split(" ")[0] : "";
                 const paymentDate = fee.payment_date ? fee.payment_date.split(" ")[0] : "";
                 const rowColor = index % 2 === 0 ? "#1a1a1a" : "#2a2a2a";
@@ -561,7 +570,7 @@ function showAnnualFeeForm(data) {
                     <tr style="background: ${rowColor};">
                         <td style="border: 1px solid #444; padding: 8px; color: white; font-weight: bold; white-space: nowrap;">${fee.year}年</td>
                         <td style="border: 1px solid #444; padding: 8px;">
-                            <input type="number" id="annualFeeAmount_${fee.year}" value="${fee.amount}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100px; padding: 4px;">
+                            <input type="number" id="annualFeeAmount_${fee.year}" value="${fee.amount}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100px; padding: 4px; cursor: text;" min="0">
                         </td>
                         <td style="border: 1px solid #444; padding: 8px;">
                             <select id="annualFeeStatus_${fee.year}" style="background-color: #3a3a3a; color: white; border: 1px solid #555; width: 100%; padding: 4px;">
@@ -593,59 +602,85 @@ function showAnnualFeeForm(data) {
                             <button onclick="saveAnnualFeeForYear(${fee.year})" style="background: #0066ff; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">保存</button>
                         </td>
                     </tr>
-                `;
-            });
-            
-            formHtml += `
-                            </tbody>
-                        </table>
-                    </div>
+        `;
+    });
+    
+    formHtml += `
+                        </tbody>
+                    </table>
                 </div>
-                
-                <div class="button-group">
-                    <button class="button button--line" onclick="closeFeeModal()" style="background: #2a2a2a; color: white; border-color: #666;">閉じる</button>
+                <div style="margin-top: 20px;">
+                    <button onclick="addNewYear()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">新しい年度を追加</button>
                 </div>
-            `;
+            </div>
             
-            modalContent.innerHTML = formHtml;
-        });
+            <div class="button-group">
+                <button class="button button--line" onclick="closeFeeModal()" style="background: #2a2a2a; color: white; border-color: #666;">閉じる</button>
+            </div>
+    `;
+    
+    modalContent.innerHTML = formHtml;
 }
 
 function saveEntryFee() {
-    const status = document.getElementById("entryFeeStatus").value;
-    const paymentDate = document.getElementById("entryFeePaymentDate").value;
-    const paymentMethod = document.getElementById("entryFeePaymentMethod").value;
+    // 要素の存在を確認
+    const amountElement = document.getElementById("entryFeeAmount");
+    const statusElement = document.getElementById("entryFeeStatus");
+    const paymentDateElement = document.getElementById("entryFeePaymentDate");
+    const paymentMethodElement = document.getElementById("entryFeePaymentMethod");
+    const paymentDeadlineElement = document.getElementById("entryFeePaymentDeadline");
+    const notesElement = document.getElementById("entryFeeNotes");
+    
+    if (!amountElement || !statusElement) {
+        console.error("Required elements not found for entry fee");
+        alert("フォーム要素が見つかりません");
+        return;
+    }
+    
+    const amount = amountElement.value;
+    const status = statusElement.value;
+    const paymentDate = paymentDateElement ? paymentDateElement.value : "";
+    const paymentMethod = paymentMethodElement ? paymentMethodElement.value : "";
+    
+    console.log("Entry fee - Amount:", amount);
+    console.log("Entry fee - Status:", status);
+    console.log("Entry fee - PaymentDate:", paymentDate);
+    console.log("Entry fee - PaymentMethod:", paymentMethod);
     
     // バリデーション：支払い済みの場合は支払日と支払い方法が必須
     let hasError = false;
     
     // 既存のエラー表示をクリア
-    document.getElementById("entryFeePaymentDate").style.backgroundColor = "";
-    document.getElementById("entryFeePaymentMethod").style.backgroundColor = "";
+    if (paymentDateElement) paymentDateElement.style.backgroundColor = "#3a3a3a";
+    if (paymentMethodElement) paymentMethodElement.style.backgroundColor = "#3a3a3a";
     
     if (status === "支払い済み") {
         if (!paymentDate) {
-            document.getElementById("entryFeePaymentDate").style.backgroundColor = "#8b0000";
+            if (paymentDateElement) paymentDateElement.style.backgroundColor = "#8b0000";
             hasError = true;
         }
         if (!paymentMethod) {
-            document.getElementById("entryFeePaymentMethod").style.backgroundColor = "#8b0000";
+            if (paymentMethodElement) paymentMethodElement.style.backgroundColor = "#8b0000";
             hasError = true;
         }
     }
     
     if (hasError) {
+        alert("支払い済みの場合は、支払日と支払い方法を入力してください");
         return; // エラーがある場合は保存しない
     }
     
     const data = {
-        amount: document.getElementById("entryFeeAmount").value,
+        amount: amount,  // 既に取得済みの値を使用
         status: status,
         payment_date: paymentDate,
         payment_method: paymentMethod,
-        payment_deadline: document.getElementById("entryFeePaymentDeadline").value,
-        notes: document.getElementById("entryFeeNotes").value
+        payment_deadline: paymentDeadlineElement ? paymentDeadlineElement.value : "",
+        notes: notesElement ? notesElement.value : ""
     };
+    
+    console.log("Sending entry fee data:", data);
+    console.log("Member ID:", currentMemberId);
     
     fetch(`api/manage-fees.php?action=update_entry_fee&member_id=${currentMemberId}`, {
         method: "POST",
@@ -654,53 +689,90 @@ function saveEntryFee() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log("Response status:", response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(result => {
+        console.log("Result:", result);
         if (result.success) {
             alert("入会金情報を更新しました");
             location.reload();
         } else {
-            alert("更新に失敗しました");
+            alert("更新に失敗しました: " + (result.error || "不明なエラー"));
         }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("エラーが発生しました: " + error.message);
     });
 }
 
 function saveAnnualFeeForYear(year) {
-    const status = document.getElementById(`annualFeeStatus_${year}`).value;
-    const paymentDate = document.getElementById(`annualFeePaymentDate_${year}`).value;
-    const paymentMethod = document.getElementById(`annualFeePaymentMethod_${year}`).value;
+    console.log("saveAnnualFeeForYear called for year:", year);
+    console.log("currentMemberId:", currentMemberId);
+    
+    // 要素の存在を確認
+    const amountElement = document.getElementById(`annualFeeAmount_${year}`);
+    const statusElement = document.getElementById(`annualFeeStatus_${year}`);
+    const paymentDateElement = document.getElementById(`annualFeePaymentDate_${year}`);
+    const paymentMethodElement = document.getElementById(`annualFeePaymentMethod_${year}`);
+    const paymentDeadlineElement = document.getElementById(`annualFeePaymentDeadline_${year}`);
+    const notesElement = document.getElementById(`annualFeeNotes_${year}`);
+    
+    if (!amountElement || !statusElement) {
+        console.error("Required elements not found for year:", year);
+        alert("フォーム要素が見つかりません");
+        return;
+    }
+    
+    const amount = amountElement.value;
+    const status = statusElement.value;
+    const paymentDate = paymentDateElement ? paymentDateElement.value : "";
+    const paymentMethod = paymentMethodElement ? paymentMethodElement.value : "";
+    
+    console.log("Amount:", amount);
+    console.log("Status:", status);
+    console.log("PaymentDate:", paymentDate);
+    console.log("PaymentMethod:", paymentMethod);
     
     // バリデーション：支払い済みの場合は支払日と支払い方法が必須
     let hasError = false;
     
     // 既存のエラー表示をクリア
-    document.getElementById(`annualFeePaymentDate_${year}`).style.backgroundColor = "#3a3a3a";
-    document.getElementById(`annualFeePaymentMethod_${year}`).style.backgroundColor = "#3a3a3a";
+    if (paymentDateElement) paymentDateElement.style.backgroundColor = "#3a3a3a";
+    if (paymentMethodElement) paymentMethodElement.style.backgroundColor = "#3a3a3a";
     
     if (status === "支払い済み") {
         if (!paymentDate) {
-            document.getElementById(`annualFeePaymentDate_${year}`).style.backgroundColor = "#8b0000";
+            if (paymentDateElement) paymentDateElement.style.backgroundColor = "#8b0000";
             hasError = true;
         }
         if (!paymentMethod) {
-            document.getElementById(`annualFeePaymentMethod_${year}`).style.backgroundColor = "#8b0000";
+            if (paymentMethodElement) paymentMethodElement.style.backgroundColor = "#8b0000";
             hasError = true;
         }
     }
     
     if (hasError) {
+        alert("支払い済みの場合は、支払日と支払い方法を入力してください");
         return; // エラーがある場合は保存しない
     }
     
     const data = {
         year: year,
-        amount: document.getElementById(`annualFeeAmount_${year}`).value,
+        amount: amount,  // 既に取得済みの値を使用
         status: status,
         payment_date: paymentDate,
         payment_method: paymentMethod,
-        payment_deadline: document.getElementById(`annualFeePaymentDeadline_${year}`).value,
-        notes: document.getElementById(`annualFeeNotes_${year}`).value
+        payment_deadline: paymentDeadlineElement ? paymentDeadlineElement.value : "",
+        notes: notesElement ? notesElement.value : ""
     };
+    
+    console.log("Sending data:", data);
     
     fetch(`api/manage-fees.php?action=update_annual_fee&member_id=${currentMemberId}`, {
         method: "POST",
@@ -709,15 +781,26 @@ function saveAnnualFeeForYear(year) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log("Response status:", response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(result => {
+        console.log("Result:", result);
         if (result.success) {
             alert(year + "年度の年会費情報を更新しました");
             // モーダルを再読み込み
             openFeeModal(currentMemberId, "annual");
         } else {
-            alert("更新に失敗しました");
+            alert("更新に失敗しました: " + (result.error || "不明なエラー"));
         }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("エラーが発生しました: " + error.message);
     });
 }
 

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "UPDATE registrations SET 
                 status = 'rejected', 
                 rejection_reason = :reason,
-                rejected_at = NOW(),
+                rejected_at = CURRENT_TIMESTAMP,
                 rejected_by = :username
                 WHERE id = :id";
         $stmt = $db->prepare($sql);

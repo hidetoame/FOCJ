@@ -52,8 +52,12 @@ $html = str_replace('href="A2_registration-list.html"', 'href="registration-list
 $html = str_replace('href="B1_edit-mail-index.html"', 'href="edit-mail.php"', $html);
 $html = str_replace('href="C1_members-list.html"', 'href="members-list.php"', $html);
 
-// 会員番号（IDの下4桁）
-$memberNumber = substr('FOCJ-' . str_pad($id, 5, '0', STR_PAD_LEFT), -4);
+// 会員番号（データベースから取得）
+if ($member['member_number']) {
+    $memberNumber = 'FOCJ-' . str_pad($member['member_number'], 5, '0', STR_PAD_LEFT);
+} else {
+    $memberNumber = '未割当';
+}
 $html = str_replace('>2000</div>', '>' . $memberNumber . '</div>', $html);
 
 // 氏名
