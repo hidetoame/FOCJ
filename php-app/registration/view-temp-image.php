@@ -6,6 +6,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once dirname(dirname(__FILE__)) . '/config/config.php';
 
 // パラメータ取得
 $file = $_GET['file'] ?? '';
@@ -26,7 +27,7 @@ if (!preg_match('/^[a-f0-9]+\.[a-z]+$/i', $file)) {
 }
 
 // ファイルパス構築
-$tempDir = '/var/www/html/user_images/temp/';
+$tempDir = USER_IMAGES_FS_PATH . '/temp/';
 $filePath = $tempDir . $sessionId . '/' . $file;
 
 // ファイル存在チェック

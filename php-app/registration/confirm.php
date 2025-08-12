@@ -24,7 +24,7 @@ unset($formData['csrf_token']);
 // ファイルアップロード処理（一時保存）
 $uploadedFiles = [];
 $fileFields = ['drivers-license', 'vehicle-inspection', 'business-card'];
-$tempDir = '/var/www/html/user_images/temp/';
+$tempDir = USER_IMAGES_FS_PATH . '/temp/';
 
 // セッションごとの一時ディレクトリ作成
 $sessionDir = $tempDir . session_id() . '/';
@@ -76,8 +76,8 @@ $csrf_token = generateCsrfToken();
 $html = file_get_contents(TEMPLATE_PATH . '/registration-form/registration-form-confirm.html');
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/registration-form/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/registration-form/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // フォームのaction属性を変更し、CSRFトークンとすべてのフォームデータをhiddenフィールドとして追加
 $hiddenFields = "\n" . '<input type="hidden" name="csrf_token" value="' . $csrf_token . '">';
@@ -199,7 +199,7 @@ $imageSection .= '<!-- Debug: Session ID = ' . session_id() . ' -->';
 // 運転免許証
 if (!empty($formData['drivers-license_file'])) {
     // ファイルの存在確認
-    $tempFile = '/var/www/html/user_images/temp/' . session_id() . '/' . $formData['drivers-license_file'];
+    $tempFile = USER_IMAGES_FS_PATH . '/temp/' . session_id() . '/' . $formData['drivers-license_file'];
     if (file_exists($tempFile)) {
         $imageSection .= '<!-- Debug: License file exists at ' . $tempFile . ' -->';
     } else {

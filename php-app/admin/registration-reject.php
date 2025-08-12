@@ -3,7 +3,7 @@
  * 管理画面 - 却下内容確認
  */
 // データベース接続（config.phpがsession_start()を呼ぶ）
-require_once '../config/config.php';
+require_once dirname(dirname(__FILE__)) . '/config/config.php';
 
 // ログインチェック
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -33,11 +33,84 @@ if (!$registration) {
 
 // POSTで理由が送信された場合は処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reason'])) {
-    $_SESSION['rejection_reason'] = $_POST['reason'];
-    $_SESSION['rejection_id'] = $id;
-    // 却下処理へ
-    header('Location: reject-handler.php');
-    exit;
+    try {
+        $db->beginTransaction();
+        
+        // rejection_reasonカラムが存在するか確認
+        $sql = "SHOW COLUMNS FROM registrations LIKE 'rejection_reason'";
+        $checkStmt = $db->query($sql);
+        $hasRejectionReason = $checkStmt->fetch();
+        
+        if (!$hasRejectionReason) {
+            // カラムが存在しない場合は追加
+            $sql = "ALTER TABLE registrations ADD COLUMN rejection_reason TEXT DEFAULT NULL AFTER status";
+            $db->exec($sql);
+        }
+        
+        // 申込を却下ステータスに更新
+        $sql = "UPDATE registrations 
+                SET status = '却下', 
+                    rejection_reason = :reason,
+                    updated_at = NOW() 
+                WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':reason' => $_POST['reason'],
+            ':id' => $id
+        ]);
+        
+        // メール送信処理
+        $customMailContent = $_POST['custom_mail_content'] ?? '';
+        
+        if ($customMailContent) {
+            // カスタムメール内容を使用
+            $mailBody = $customMailContent;
+        } else {
+            // テンプレートを使用
+            $sql = "SELECT * FROM mail_templates 
+                    WHERE template_type = '却下通知' AND is_active = true 
+                    LIMIT 1";
+            $stmt = $db->query($sql);
+            $template = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($template) {
+                $mailBody = $template['body'];
+                $mailBody = str_replace('{{name}}', $registration['family_name'] . ' ' . $registration['first_name'], $mailBody);
+                $mailBody = str_replace('{NAME}', $registration['family_name'] . ' ' . $registration['first_name'], $mailBody);
+                $mailBody = str_replace('{{email}}', $registration['email'], $mailBody);
+                $mailBody = str_replace('{{rejection_reason}}', $_POST['reason'], $mailBody);
+            } else {
+                $mailBody = "申し訳ございませんが、お申込みを却下させていただきました。\n\n理由: " . $_POST['reason'];
+            }
+        }
+        
+        // メール送信（実際の送信処理はコメントアウト）
+        // sendEmail($registration['email'], 'お申込みについて', $mailBody);
+        
+        // メール履歴を記録（一時的にコメントアウト）
+        /*
+        $sql = "INSERT INTO email_logs (user_id, template_type, subject, body, sent_at) 
+                VALUES (:user_id, '却下通知', 'お申込みについて', :body, NOW())";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':user_id' => $id,
+            ':body' => $mailBody
+        ]);
+        */
+        
+        $db->commit();
+        
+        // 完了ページへリダイレクト
+        $_SESSION['rejection_success'] = true;
+        $_SESSION['rejection_id'] = $id;
+        header('Location: registration-reject-complete.php');
+        exit;
+        
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log("Registration rejection error: " . $e->getMessage());
+        die("却下処理中にエラーが発生しました: " . $e->getMessage());
+    }
 }
 
 // アクティブな却下用テンプレートを取得
@@ -63,11 +136,11 @@ if (!$template) {
 }
 
 // テンプレート読み込み
-$html = file_get_contents('/var/www/html/templates/member-management/A6_registration-reject.html');
+$html = file_get_contents(getTemplateFilePath('member-management/A6_registration-reject.html'));
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/member-management/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/member-management/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // ユーザー名を表示
 $username = $_SESSION['admin_username'] ?? 'admin';
@@ -92,6 +165,10 @@ $html = str_replace('<h3>送信メール内容<a href="#"',
 $mailContentDisplay = nl2br(h($mailContent));
 $mailContentEdit = h($mailContent);
 
+// 編集ボタンを編集切り替えボタンに変更（先に実行）
+$html = str_replace('<a href="#" class="button button--line button--small">編集する</a>', 
+    '<a href="#" onclick="toggleMailEdit(); return false;" id="editButton" class="button button--line button--small">編集する</a>', $html);
+
 // 表示用と編集用の両方のHTMLを作成
 $mailContentHtml = '
 <div id="mailContentDisplay" class="registration-detail-mail-content">' . $mailContentDisplay . '</div>
@@ -99,10 +176,6 @@ $mailContentHtml = '
 
 $html = preg_replace('/<div class="registration-detail-mail-content">.*?<\/div>/s', 
     $mailContentHtml, $html);
-
-// 編集ボタンを編集切り替えボタンに変更
-$html = str_replace('<a href="#" class="button button--line button--small">編集する</a>', 
-    '<a href="#" onclick="toggleMailEdit(); return false;" id="editButton" class="button button--line button--small">編集する</a>', $html);
 
 // 申込者情報を表示
 // 氏名
@@ -219,9 +292,24 @@ if ($businessCardImage) {
     $businessCardHtml = '<span style="color: #999;">画像なし</span>';
 }
 $html = preg_replace(
-    '/<div class="registration-detail-name">名刺<\/div>\s*<div class="registration-detail-value"><img[^>]*><\/div>/',
+    '/<div class="registration-detail-name">名刺<\/div>\s*<div class="registration-detail-value">.*?<\/div>/s',
     '<div class="registration-detail-name">名刺</div>
                   <div class="registration-detail-value">' . $businessCardHtml . '</div>',
+    $html
+);
+
+// 却下理由入力欄を追加（申込者の情報の前に挿入）
+$rejectionReasonHtml = '
+
+                <h3>却下理由</h3>
+                <textarea id="rejectionReason" name="reason" class="input-textarea" placeholder="却下理由を入力してください" style="width: 100%; min-height: 100px; padding: 10px; background-color: #2a2a2a; color: #fff; border: 1px solid #666; border-radius: 4px;" required></textarea>
+';
+
+// 申込者の情報の前に却下理由を挿入
+$html = str_replace(
+    '<h3>申込者の情報</h3>',
+    $rejectionReasonHtml . '
+                <h3>申込者の情報</h3>',
     $html
 );
 
@@ -229,16 +317,16 @@ $html = preg_replace(
 // 戻るボタン
 $html = str_replace('href="A3_registration-detail.html"', 'href="registration-detail.php?id=' . $id . '"', $html);
 
-// textareaにname属性を追加
-$html = str_replace('<textarea class="input-textarea" placeholder="却下理由を入力してください"></textarea>',
-    '<textarea name="reason" class="input-textarea" placeholder="却下理由を入力してください" required></textarea>', $html);
+// 却下するボタンをonclickに変更（承認画面と同じ方式）
+$html = str_replace('href="A7_registration-reject-complete.html"', 'href="#" onclick="submitRejectionForm(); return false;"', $html);
 
-// カスタムメール内容を送信するための隠しフィールドを追加
-$html = str_replace('</form>',
-    '<input type="hidden" name="custom_mail_content" id="customMailContent" value=""></form>', $html);
+// 却下実行用のフォームとJavaScriptを追加（承認画面と同じ構造）
+$form = '
+<form id="rejectForm" method="POST" action="registration-reject.php?id=' . $id . '" style="display: none;">
+    <input type="hidden" name="reason" id="hiddenReason" value="">
+    <input type="hidden" name="custom_mail_content" id="customMailContent" value="">
+</form>
 
-// JavaScriptを追加
-$script = '
 <script>
 var isEditing = false;
 
@@ -277,7 +365,7 @@ function toggleMailEdit() {
         var editedContent = edit.value;
         
         // 理由欄の内容を取得してメール内容に反映
-        var reasonText = document.querySelector(\'textarea[name="reason"]\').value;
+        var reasonText = document.getElementById("rejectionReason").value;
         if (reasonText) {
             editedContent = editedContent.replace(/（非承認理由）/g, reasonText);
         }
@@ -287,25 +375,38 @@ function toggleMailEdit() {
     }
 }
 
-// フォーム送信時にカスタムメール内容を設定
-document.querySelector(\'form[action*="registration-reject.php"]\').onsubmit = function() {
+// 却下フォームを送信
+function submitRejectionForm() {
+    // 理由のチェック
+    var reasonText = document.getElementById("rejectionReason").value;
+    if (!reasonText || reasonText.trim() === "") {
+        alert("却下理由を入力してください。");
+        document.getElementById("rejectionReason").focus();
+        return false;
+    }
+    
+    // 編集中の場合は編集を完了
     if (isEditing) {
         toggleMailEdit();
     }
     
+    // メール内容を取得
     var editContent = document.getElementById("mailContentEdit").value;
     
-    // 理由欄の内容を取得してメール内容に反映
-    var reasonText = document.querySelector(\'textarea[name="reason"]\').value;
-    if (reasonText && editContent) {
+    // 理由をメール内容に反映
+    if (editContent) {
         editContent = editContent.replace(/（非承認理由）/g, reasonText);
     }
     
+    // フォームにセット
+    document.getElementById("hiddenReason").value = reasonText;
     document.getElementById("customMailContent").value = editContent;
-    return true;
-};
+    
+    // フォーム送信
+    document.getElementById("rejectForm").submit();
+}
 </script>';
 
-$html = str_replace('</body>', $script . '</body>', $html);
+$html = str_replace('</body>', $form . '</body>', $html);
 
 echo $html;

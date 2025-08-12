@@ -3,7 +3,7 @@
  * 管理画面 - 会員希望申請一覧
  */
 // データベース接続（config.phpがsession_start()を呼ぶ）
-require_once '../config/config.php';
+require_once dirname(dirname(__FILE__)) . '/config/config.php';
 
 // ログインチェック
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -30,7 +30,7 @@ if ($statusFilter === 'pending') {
 } elseif ($statusFilter === 'withdrawn') {
     $whereClause = "WHERE is_withdrawn = TRUE";
 } elseif ($statusFilter === 'rejected') {
-    $whereClause = "WHERE status = 'rejected' AND is_withdrawn = FALSE";
+    $whereClause = "WHERE (status = 'rejected' OR status = '却下') AND is_withdrawn = FALSE";
 } elseif ($statusFilter === 'all') {
     $whereClause = "";
 }
@@ -50,11 +50,11 @@ $stmt->execute();
 $registrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // テンプレート読み込み
-$html = file_get_contents('/var/www/html/templates/member-management/A2_registration-list.html');
+$html = file_get_contents(getTemplateFilePath('member-management/A2_registration-list.html'));
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/member-management/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/member-management/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // ユーザー名を表示
 $username = $_SESSION['admin_username'] ?? 'admin';
@@ -106,10 +106,12 @@ foreach ($registrations as $reg) {
                 $statusText = '未対応';
                 break;
             case 'approved':
+            case '承認':
                 $statusText = '<span style="color: green;">承認済</span>';
                 break;
             case 'rejected':
-                $statusText = '<span style="color: red;">否認</span>';
+            case '却下':
+                $statusText = '<span style="color: red;">否認済</span>';
                 break;
         }
     }

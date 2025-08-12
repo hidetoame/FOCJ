@@ -11,7 +11,7 @@ $html = file_get_contents(TEMPLATE_PATH . '/registration-form/index.html');
 $html = str_replace('href="registration-form.html"', 'href="form.php"', $html);
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/registration-form/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/registration-form/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 echo $html;

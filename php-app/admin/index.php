@@ -4,6 +4,8 @@
  */
 session_start();
 
+require_once dirname(dirname(__FILE__)) . '/config/config.php';
+
 // ログイン済みの場合はダッシュボードへ
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
     header('Location: dashboard.php');
@@ -30,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // テンプレート読み込み
 $template = $error ? '0_login-error.html' : '0_login.html';
-$html = file_get_contents('/var/www/html/templates/member-management/' . $template);
+$html = file_get_contents(getTemplateFilePath('member-management/' . $template));
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/member-management/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/member-management/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // フォームのアクションを調整
 $html = str_replace('action="A1_admin-index.html"', 'action="index.php"', $html);

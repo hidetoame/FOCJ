@@ -2,6 +2,7 @@
 /**
  * FOCJ Admin Application Entry Point
  */
+require_once 'config/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -72,7 +73,7 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="/templates/registration-form/assets/img/logo_focj.svg" width="150" height="150" alt="Ferrari Owners' Club Japan">
+            <img src="<?php echo REGISTRATION_TEMPLATE_WEB_PATH; ?>/assets/img/logo_focj.svg" width="150" height="150" alt="Ferrari Owners' Club Japan">
         </div>
         <h1>Ferrari Owners' Club Japan</h1>
         <p>フェラーリオーナーズクラブジャパンへようこそ</p>

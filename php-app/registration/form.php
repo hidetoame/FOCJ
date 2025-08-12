@@ -20,8 +20,8 @@ $html = file_get_contents(TEMPLATE_PATH . '/registration-form/registration-form.
 $html = str_replace('action="registration-form-confirm.html"', 'action="confirm.php"', $html);
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/registration-form/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/registration-form/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // CSRFトークンを追加
 $csrfField = '<input type="hidden" name="csrf_token" value="' . $csrf_token . '">';

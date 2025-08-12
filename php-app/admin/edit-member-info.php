@@ -3,7 +3,7 @@
  * 管理画面 - 会員情報編集
  */
 // データベース接続（config.phpがsession_start()を呼ぶ）
-require_once '../config/config.php';
+require_once dirname(dirname(__FILE__)) . '/config/config.php';
 
 // ログインチェック
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -33,11 +33,11 @@ if (!$member) {
 
 
 // テンプレート読み込み
-$html = file_get_contents('/var/www/html/templates/member-management/C3_edit-member-info.html');
+$html = file_get_contents(getTemplateFilePath('member-management/C3_edit-member-info.html'));
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/member-management/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/member-management/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . ADMIN_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // ユーザー名を表示
 $username = $_SESSION['admin_username'] ?? 'admin';

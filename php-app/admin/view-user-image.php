@@ -3,7 +3,7 @@
  * ユーザー画像表示エンドポイント
  * 管理者のみアクセス可能
  */
-session_start();
+require_once '../config/config.php';
 
 // 管理者ログインチェック
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -33,8 +33,7 @@ if (!is_numeric($userId)) {
 }
 
 // ファイルパス構築
-$userDir = '/var/www/html/user_images/' . $userId . '/';
-$filePath = $userDir . $file;
+$filePath = getUserImageFilePath($userId, $file);
 
 // ファイル存在チェック
 if (!file_exists($filePath)) {

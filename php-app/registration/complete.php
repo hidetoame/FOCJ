@@ -143,12 +143,12 @@ try {
     error_log("SQL executed successfully! New user ID: " . $userId);
     
     // ユーザーディレクトリを作成して画像を移動
-    $userDir = '/var/www/html/user_images/' . $userId . '/';
+    $userDir = USER_IMAGES_FS_PATH . '/' . $userId . '/';
     if (!is_dir($userDir)) {
         mkdir($userDir, 0755, true);
     }
     
-    $tempDir = '/var/www/html/user_images/temp/' . session_id() . '/';
+    $tempDir = USER_IMAGES_FS_PATH . '/temp/' . session_id() . '/';
     $imageFields = [
         'drivers-license_file' => 'license_image',
         'vehicle-inspection_file' => 'vehicle_inspection_image',
@@ -198,8 +198,8 @@ try {
 $html = file_get_contents(TEMPLATE_PATH . '/registration-form/registration-form-thanks.html');
 
 // アセットパスを調整
-$html = str_replace('href="assets/', 'href="/templates/registration-form/assets/', $html);
-$html = str_replace('src="assets/', 'src="/templates/registration-form/assets/', $html);
+$html = str_replace('href="assets/', 'href="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
+$html = str_replace('src="assets/', 'src="' . REGISTRATION_TEMPLATE_WEB_PATH . '/assets/', $html);
 
 // トップページへのリンクを調整
 $html = str_replace('href="index.html"', 'href="index.php"', $html);
